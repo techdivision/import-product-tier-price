@@ -24,6 +24,7 @@ namespace TechDivision\Import\Product\TierPrice\Subjects;
 
 use League\Event\EmitterInterface;
 use Doctrine\Common\Collections\Collection;
+use TechDivision\Import\Utils\RegistryKeys;
 use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
 use TechDivision\Import\Product\Subjects\AbstractProductSubject;
 use TechDivision\Import\Services\RegistryProcessorInterface;
@@ -151,7 +152,9 @@ class TierPriceSubject extends AbstractProductSubject
         $status = $registryProcessor->getAttribute($serial);
 
         // load the attribute set we've prepared intially
-        $this->productSkusByRowId = array_flip($status[\TechDivision\Import\Utils\RegistryKeys::SKU_ROW_ID_MAPPING]);
+        if (isset($status[RegistryKeys::SKU_ROW_ID_MAPPING])) {
+            $this->productSkusByRowId = array_flip($status[RegistryKeys::SKU_ROW_ID_MAPPING]);
+        }
     }
 
     /**

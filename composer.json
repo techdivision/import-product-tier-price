@@ -30,7 +30,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "TechDivision\\Import\\Product\\TierPrices\\": [
+            "TechDivision\\Import\\Product\\TierPrice\\": [
                 "src/",
                 "symfony/",
                 "tests/unit"
