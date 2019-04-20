@@ -1,5 +1,5 @@
 {
-    "name": "refusion/module-product-tier-prices-import",
+    "name": "techdivision/import-product-tier-price",
     "description": "M2IF library providing basic Magento 2 product tier price import functionality",
     "license": "OSL-3.0",
     "require": {
