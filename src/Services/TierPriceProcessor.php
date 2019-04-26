@@ -64,13 +64,6 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     protected $tierPriceRepository;
 
     /**
-     * The repository to load the products with.
-     *
-     * @var \TechDivision\Import\Product\Repositories\ProductRepositoryInterface
-     */
-    protected $productRepository;
-
-    /**
      * Caches the existing tier price records referenced by their unique hash.
      *
      * @var array
@@ -82,18 +75,15 @@ class TierPriceProcessor implements TierPriceProcessorInterface
      *
      * @param \TechDivision\Import\Connection\ConnectionInterface                              $connection          The \PDO connnection instance
      * @param \TechDivision\Import\Product\TierPrice\Repositories\TierPriceRepositoryInterface $tierPriceRepository The repository to load the tier prices with
-     * @param \TechDivision\Import\Product\Repositories\ProductRepositoryInterface             $productRepository   The repository to load the products with
      * @param \TechDivision\Import\Actions\ActionInterface                                     $tierPriceAction     The action for tier price  CRUD methods
      */
     public function __construct(
         ConnectionInterface $connection,
         TierPriceRepositoryInterface $tierPriceRepository,
-        ProductRepositoryInterface $productRepository,
         ActionInterface $tierPriceAction
     ) {
         $this->setConnection($connection);
         $this->setTierPriceRepository($tierPriceRepository);
-        $this->setProductRepository($productRepository);
         $this->setTierPriceAction($tierPriceAction);
     }
 
@@ -208,100 +198,29 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     }
 
     /**
-     * Sets the repository to load the products with.
-     *
-     * @param \TechDivision\Import\Product\Repositories\ProductRepositoryInterface $productRepository The repository instance
-     *
-     * @return void
-     */
-    public function setProductRepository(ProductRepositoryInterface $productRepository)
-    {
-        $this->productRepository = $productRepository;
-    }
-
-    /**
-     * Returns the repository to load the products with.
-     *
-     * @return \TechDivision\Import\Product\Repositories\ProductRepositoryInterface The repository instance
-     */
-    public function getProductRepository()
-    {
-        return $this->productRepository;
-    }
-
-    /**
-     * Creates a hash from the tier price data that bijectively corresponds to the unique
-     * constraint in the tier price table.
-     *
-     * @param array $tierPrice The tier price to create the hash for
-     *
-     * @return string The hash for the passed tier price
-     */
-    public function getTierPriceHash($tierPrice)
-    {
-        return sprintf(
-            '%d-%d-%d-%.4F-%d',
-            $tierPrice[$this->getProductRepository()->getPrimaryKeyName()],
-            $tierPrice[MemberNames::ALL_GROUPS],
-            $tierPrice[MemberNames::CUSTOMER_GROUP_ID],
-            $tierPrice[MemberNames::QTY],
-            $tierPrice[MemberNames::WEBSITE_ID]
-        );
-    }
-
-    /**
-     * Returns all the existing tier prices referenced by their unique hash.
-     *
-     * @return array The array with the hashed tier prices
-     */
-    public function getTierPricesByHash()
-    {
-
-        // query whether or not the tier prices has already been loaded
-        if (is_null($this->tierPricesByHash)) {
-            // initialize the array for the tier prices
-            $result = [];
-            // load ALL tier prices from the database
-            $tierPrices = $this->getTierPriceRepository()->findAll();
-
-            // register the tier prices with it's unique hash
-            foreach ($tierPrices as $tierPrice) {
-                $result[$this->getTierPriceHash($tierPrice)] = $tierPrice;
-            }
-
-            // set the array with the hashed tier prices
-            $this->tierPricesByHash = $result;
-        }
-
-        // return the hashed tier prices
-        return $this->tierPricesByHash;
-    }
-
-    /**
      * Returns all tier prices.
      *
-     * @return array The tier prices
+     * @return array The array with the tier prices
      */
-    public function getTierPrices()
+    public function loadTierPrices()
     {
-        return array_values($this->getTierPricesByHash());
+        return $this->getTierPriceRepository()->findAll();
     }
 
     /**
-     * Matches the given tier price to an existing one, if possible.
+     * Returns the tier price with the given parameters.
      *
-     * @param array $tierPrice The tier price to match
+     * @param string  $entityId        The entity ID of the product relation
+     * @param integer $allGroups       The flag if all groups are affected or not
+     * @param integer $customerGroupId The customer group ID
+     * @param integer $qty             The tier price quantity
+     * @param integer $websiteId       The website ID the tier price is related to
      *
-     * @return array|null Returns the matched tier price
+     * @return array The tier price
      */
-    public function matchTierPrice($tierPrice)
+    public function loadTierPriceByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($entityId, $allGroups, $customerGroupId, $qty, $websiteId)
     {
-
-        // load the tier prices
-        $tierPricesByHash = $this->getTierPricesByHash();
-
-        // query whether or not the passed one is available and return it, if possible
-        return $tierPricesByHash[$this->getTierPriceHash($tierPrice)] ? $tierPricesByHash[$this->getTierPriceHash($tierPrice)] : null;
+        return $this->getTierPriceRepository()->findOneByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($entityId, $allGroups, $customerGroupId, $qty, $websiteId);
     }
 
     /**
@@ -331,26 +250,30 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     }
 
     /**
-     * Indicates whether the two given tier prices are equal.
+     * Clean-Up the tier prices after an add-update operation.
      *
-     * @param array $tierPrice1 The first tier price to match
-     * @param array $tierPrice2 The second tier price to match
+     * @param array $processedTierPrices The array with the IDs of the processed tier prices
      *
-     * @return boolean TRUE if the passed tier prices are equal, else FALSE
+     * @return void
      */
-    public function tierPricesEqual($tierPrice1, $tierPrice2)
+    public function cleanUpTierPrices(array $processedTierPrices)
     {
 
-        // load the product's primary key name
-        $productPrimaryKeyName = $this->getProductRepository()->getPrimaryKeyName();
+        // load the available + the processed tier prices
+        $availableTierPrices = $this->loadTierPrices();
 
-        // query whether or not the two given tier prices are equal
-        return ($tierPrice1[$productPrimaryKeyName]         == $tierPrice2[$productPrimaryKeyName]) &&
-               ($tierPrice1[MemberNames::VALUE]             == $tierPrice2[MemberNames::VALUE]) &&
-               ($tierPrice1[MemberNames::PERCENTAGE_VALUE]  == $tierPrice2[MemberNames::PERCENTAGE_VALUE]) &&
-               ($tierPrice1[MemberNames::QTY]               == $tierPrice2[MemberNames::QTY]) &&
-               ($tierPrice1[MemberNames::ALL_GROUPS]        == $tierPrice2[MemberNames::ALL_GROUPS]) &&
-               ($tierPrice1[MemberNames::CUSTOMER_GROUP_ID] == $tierPrice2[MemberNames::CUSTOMER_GROUP_ID]) &&
-               ($tierPrice1[MemberNames::WEBSITE_ID]        == $tierPrice2[MemberNames::WEBSITE_ID]);
+        // iterate over the tier prices and delete the obsolete ones
+        foreach ($availableTierPrices as $tierPrice) {
+            // if imported, we continue
+            if (isset($processedTierPrices[$tierPrice[MemberNames::VALUE_ID]])) {
+                // if the product has been touched by the import, delete the tier price
+                if (in_array($tierPrice[MemberNames::ENTITY_ID], $processedTierPrices[$tierPrice[MemberNames::VALUE_ID]])) {
+                    continue;
+                }
+
+                // delete the tier price, because the entity is part of the import but the tier price is NOT available any more
+                $this->deleteTierPrice([MemberNames::VALUE_ID => $tierPrice[MemberNames::VALUE_ID]]);
+            }
+        }
     }
 }

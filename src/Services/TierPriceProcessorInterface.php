@@ -53,44 +53,24 @@ interface TierPriceProcessorInterface extends ProductProcessorInterface
     public function getTierPriceRepository();
 
     /**
-     * Returns the repository to load the products with.
-     *
-     * @return \TechDivision\Import\Product\Repositories\ProductRepositoryInterface The repository instance
-     */
-    public function getProductRepository();
-
-    /**
-     * Creates a hash from the tier price data that bijectively corresponds to the unique
-     * constraint in the tier price table.
-     *
-     * @param array $tierPrice The tier price to create the hash for
-     *
-     * @return string The hash for the passed tier price
-     */
-    public function getTierPriceHash($tierPrice);
-
-    /**
-     * Returns all the existing tier prices referenced by their unique hash.
-     *
-     * @return array The array with the hashed tier prices
-     */
-    public function getTierPricesByHash();
-
-    /**
      * Returns all tier prices.
      *
-     * @return array The tier prices
+     * @return array The array with the tier prices
      */
-    public function getTierPrices();
+    public function loadTierPrices();
 
     /**
-     * Matches the given tier price to an existing one, if possible.
+     * Returns the tier price with the given parameters.
      *
-     * @param array $tierPrice The tier price to match
+     * @param string  $entityId        The entity ID of the product relation
+     * @param integer $allGroups       The flag if all groups are affected or not
+     * @param integer $customerGroupId The customer group ID
+     * @param integer $qty             The tier price quantity
+     * @param integer $websiteId       The website ID the tier price is related to
      *
-     * @return array|null Returns the matched tier price
+     * @return array The tier price
      */
-    public function matchTierPrice($tierPrice);
+    public function loadTierPriceByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($entityId, $allGroups, $customerGroupId, $qty, $websiteId);
 
     /**
      * Persists the tier price with the passed data.
@@ -113,12 +93,11 @@ interface TierPriceProcessorInterface extends ProductProcessorInterface
     public function deleteTierPrice($row, $name = null);
 
     /**
-     * Indicates whether the two given tier prices are equal.
+     * Clean-Up the tier prices after an add-update operation.
      *
-     * @param array $tierPrice1 The first tier price to match
-     * @param array $tierPrice2 The second tier price to match
+     * @param array $processedTierPrices The array with the IDs of the processed tier prices
      *
-     * @return boolean TRUE if the passed tier prices are equal, else FALSE
+     * @return void
      */
-    public function tierPricesEqual($tierPrice1, $tierPrice2);
+    public function cleanUpTierPrices(array $processedTierPrices);
 }

@@ -5,6 +5,24 @@
   "archive-artefacts" : true,
   "debug-mode" : false,
   "entity-type-code" : "catalog_product_tier_price",
+  "listeners" : [
+    {
+      "app.set.up" : [
+        "import.listener.render.ansi.art",
+        "import.listener.initialize.registry"
+      ]
+    },
+    {
+      "app.tear.down" : [
+        "import.listener.clear.registry"
+      ]
+    },
+    {
+      "subject.artefact.process.success" : [
+        "import_product_tier_price.listener.delete.obsolete.tier_prices"
+      ]
+    }
+  ],
   "databases" : [
   ],
   "loggers": [
@@ -30,13 +48,6 @@
       ]
     }
   ],
-  "listeners" : [
-    {
-      "subject.artefact.process.success" : [
-        "import_product_tier_price.listener.delete.obsolete.tier_prices"
-      ]
-    }
-  ],
   "operations" : [
     {
       "name" : "delete",
@@ -51,7 +62,7 @@
               "id": "import.subject.move.files",
               "identifier": "move-files",
               "file-resolver": {
-                "prefix": "product-import"
+                "prefix": "product-import-tier-price"
               },
               "ok-file-needed": true
             },
@@ -59,13 +70,59 @@
               "id": "import_product_ee.subject.bunch",
               "identifier": "files",
               "file-resolver": {
-                "prefix": "product-import"
+                "prefix": "product-import-tier-price"
               },
               "observers": [
                 {
                   "import": [
-                    "import_product_url_rewrite.observer.clear.url.rewrite",
-                    "import_product.observer.clear.product"
+                    "import_product_tier_price.observer.clear.tier.price"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "import.plugin.archive"
+        }
+      ]
+    },
+    {
+      "name" : "replace",
+      "plugins" : [
+        {
+          "id": "import.plugin.cache.warmer"
+        },
+        {
+          "id": "import.plugin.global.data"
+        },
+        {
+          "id": "import.plugin.subject",
+          "subjects": [
+            {
+              "id": "import.subject.move.files",
+              "identifier": "move-files",
+              "file-resolver": {
+                "prefix": "product-import-tier-price"
+              },
+              "ok-file-needed": true
+            },
+            {
+              "id": "import_product_ee.subject.bunch",
+              "identifier": "files",
+              "file-resolver": {
+                "prefix": "product-import-tier-price"
+              },
+              "params" : [
+                {
+                  "clean-up-tier-prices" : true
+                }
+              ],
+              "observers": [
+                {
+                  "import": [
+                    "import_product_tier_price.observer.clear.tier.price"
+                    "import_product_tier_price.observer.tier_price"
                   ]
                 }
               ]
@@ -93,7 +150,7 @@
               "id": "import.subject.move.files",
               "identifier": "move-files",
               "file-resolver": {
-                "prefix": "product-import"
+                "prefix": "product-import-tier-price"
               },
               "ok-file-needed": true
             },
@@ -101,127 +158,13 @@
               "id": "import_product_ee.subject.bunch",
               "identifier": "files",
               "file-resolver": {
-                "prefix": "product-import"
+                "prefix": "product-import-tier-price"
               },
               "params" : [
                 {
-                  "copy-images" : false,
-                  "clean-up-empty-columns" : []
+                  "clean-up-tier-prices" : true
                 }
               ],
-              "observers": [
-                {
-                  "pre-import": [
-                    "import.observer.attribute.set",
-                    "import.observer.additional.attribute",
-                    "import_product_ee.observer.url.key",
-                    "import_product.observer.quality.and.stock.status"
-                  ]
-                },
-                {
-                  "import": [
-                    "import_product_ee.observer.product",
-                    "import_product.observer.product.website.update",
-                    "import_product.observer.category.product.update",
-                    "import_product.observer.product.inventory.update",
-                    "import_product_ee.observer.product.attribute.update",
-                    "import_product_url_rewrite.observer.product.url.rewrite",
-                    "import_product_variant.observer.product.variant",
-                    "import_product_bundle.observer.product.bundle",
-                    "import_product_link.observer.product.link",
-                    "import_product_grouped.observer.product.grouped",
-                    "import_product_tier_price.observer.product.tier_price"
-                  ]
-                },
-                {
-                  "post-import": [
-                    "import_product_ee.observer.clean.up"
-                  ]
-                }
-              ]
-            },
-            {
-              "id": "import_product_variant_ee.subject.variant",
-              "file-resolver": {
-                "prefix": "variants"
-              },
-              "observers": [
-                {
-                  "pre-import": [
-                    "import.observer.attribute.set"
-                  ]
-                },
-                {
-                  "import": [
-                    "import_product_variant_ee.observer.variant.super.link.update",
-                    "import_product_variant_ee.observer.variant.super.attribute.update",
-                    "import_product_variant_ee.observer.variant.product.relation.update"
-                  ]
-                }
-              ]
-            },
-            {
-              "id": "import_product_bundle_ee.subject.bundle",
-              "file-resolver": {
-                "prefix": "bundles"
-              },
-              "observers": [
-                {
-                  "import": [
-                    "import_product_bundle_ee.observer.bundle.option.update",
-                    "import_product_bundle_ee.observer.bundle.option.value.update",
-                    "import_product_bundle_ee.observer.bundle.selection.update",
-                    "import_product_bundle.observer.bundle.selection.price.update",
-                    "import_product_bundle_ee.observer.bundle.product.relation.update"
-                  ]
-                }
-              ]
-            },
-            {
-              "id": "import_product_grouped_ee.subject.grouped",
-              "file-resolver": {
-                "prefix": "grouped"
-              },
-              "observers": [
-                {
-                  "import": [
-                    "import_product_grouped_ee.observer.grouped.product.relation.update"
-                  ]
-                }
-              ]
-            },
-            {
-              "id": "import_product_link_ee.subject.link",
-              "file-resolver": {
-                "prefix": "links"
-              },
-              "observers": [
-                {
-                  "import": [
-                    "import_product_link_ee.observer.link",
-                    "import_product_link.observer.link.attribute.position.update"
-                  ]
-                }
-              ]
-            },
-            {
-              "id": "import_product_url_rewrite.subject.url.rewrite",
-              "file-resolver": {
-                "prefix": "url-rewrite"
-              },
-              "observers": [
-                {
-                  "import": [
-                    "import_product_url_rewrite.observer.url.rewrite.update"
-                  ]
-                }
-              ]
-            },
-            {
-              "id": "import_product_tier_price.subject.tier_price",
-              "file-resolver": {
-                "prefix": "tier-price"
-              },
               "observers": [
                 {
                   "import": [

@@ -44,13 +44,6 @@ class MemberNames extends \TechDivision\Import\Product\Utils\MemberNames
     const ALL_GROUPS = 'all_groups';
 
     /**
-     * Name for the member 'customer_group_code'.
-     *
-     * @var string
-     */
-    const CUSTOMER_GROUP_CODE = 'customer_group_code';
-
-    /**
      * Name for the member 'customer_group_id'.
      *
      * @var string

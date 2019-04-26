@@ -23,6 +23,7 @@
 namespace TechDivision\Import\Product\TierPrice\Repositories;
 
 use TechDivision\Import\Repositories\AbstractRepository;
+use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
 use TechDivision\Import\Product\TierPrice\Utils\SqlStatementKeys;
 
 /**
@@ -47,6 +48,13 @@ class TierPriceRepository extends AbstractRepository implements TierPriceReposit
     protected $tierPricesStmt;
 
     /**
+     * The prepared statement to load an existing tier price by PK, all groups, customer group ID, qty and website ID.
+     *
+     * @var \PDOStatement
+     */
+    protected $tierPriceByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteIdStmt;
+
+    /**
      * Initializes the repository's prepared statements.
      *
      * @return void
@@ -54,7 +62,38 @@ class TierPriceRepository extends AbstractRepository implements TierPriceReposit
     public function init()
     {
         // initialize the prepared statements
-        $this->tierPricesStmt = $this->getConnection()->prepare($this->loadStatement(SqlStatementKeys::TIER_PRICES));
+        $this->tierPricesStmt =
+            $this->getConnection()->prepare($this->loadStatement(SqlStatementKeys::TIER_PRICES));
+        $this->tierPriceByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteIdStmt =
+            $this->getConnection()->prepare($this->loadStatement(SqlStatementKeys::TIER_PRICE_BY_ENTITY_ID_AND_ALL_GROUPS_AND_CUSTOMER_GROUP_ID_AND_QTY_AND_WEBSITE_ID));
+    }
+
+    /**
+     * Returns the tier price with the given parameters.
+     *
+     * @param string  $entityId        The entity ID of the product relation
+     * @param integer $allGroups       The flag if all groups are affected or not
+     * @param integer $customerGroupId The customer group ID
+     * @param integer $qty             The tier price quantity
+     * @param integer $websiteId       The website ID the tier price is related to
+     *
+     * @return array The tier price
+     */
+    public function findOneByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($entityId, $allGroups, $customerGroupId, $qty, $websiteId)
+    {
+
+        // initialize the params
+        $params = array(
+            MemberNames::ENTITY_ID         => $entityId,
+            MemberNames::ALL_GROUPS        => $allGroups,
+            MemberNames::CUSTOMER_GROUP_ID => $customerGroupId,
+            MemberNames::QTY               => $qty,
+            MemberNames::WEBSITE_ID        => $websiteId
+        );
+
+        // load and return the tier price with the passed params
+        $this->tierPriceByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteIdStmt->execute($params);
+        return $this->tierPriceByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteIdStmt->fetch(\PDO::FETCH_ASSOC);
     }
 
     /**

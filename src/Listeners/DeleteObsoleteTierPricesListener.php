@@ -23,7 +23,8 @@
 namespace TechDivision\Import\Product\TierPrice\Listeners;
 
 use TechDivision\Import\Subjects\SubjectInterface;
-use TechDivision\Import\Product\TierPrice\Observers\TierPriceUpdateObserver;
+use TechDivision\Import\Product\TierPrice\Utils\ConfigurationKeys;
+use TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface;
 
 /**
  * After the subject has finished it's processing, this listener causes the obsolete tier prices to be deleted.
@@ -40,24 +41,37 @@ class DeleteObsoleteTierPricesListener extends \League\Event\AbstractListener
 {
 
     /**
-     * The invoking observer instance.
+     * The invoking tier price processor instance.
      *
-     * @var \TechDivision\Import\Product\TierPrice\Observers\TierPriceUpdateObserver
+     * @var \TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface
      */
-    protected $tierPriceUpdateObserver;
+    protected $tierPriceProcessor;
 
     /**
-     * Initializes the listener with the invoking observer instance.
+     * Initializes the listener with the tier price processor.
      *
-     * @param \TechDivision\Import\Product\TierPrice\Observers\TierPriceUpdateObserver $tierPriceUpdateObserver The observer instance
+     * @param \TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface $tierPriceProcessor The observer instance
      */
-    public function __construct(TierPriceUpdateObserver $tierPriceUpdateObserver)
+    public function __construct(TierPriceProcessorInterface $tierPriceProcessor)
     {
-        $this->tierPriceUpdateObserver = $tierPriceUpdateObserver;
+        $this->tierPriceProcessor = $tierPriceProcessor;
+    }
+
+    /**
+     * Returns the tier price processor instance.
+     *
+     * @return \TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface The processor instance
+     */
+    protected function getTierPriceProcessor()
+    {
+        return $this->tierPriceProcessor;
     }
 
     /**
      * Handle the event.
+     *
+     * Deletes the tier prices for all the products, which have been touched by the import,
+     * and which were not part of the tier price import.
      *
      * @param \League\Event\EventInterface                   $event   The event that triggered the listener
      * @param \TechDivision\Import\Subjects\SubjectInterface $subject The subject that triggered the listener
@@ -67,9 +81,12 @@ class DeleteObsoleteTierPricesListener extends \League\Event\AbstractListener
     public function handle(\League\Event\EventInterface $event, SubjectInterface $subject = null)
     {
 
-        // remove the obsolete tier prices, if the subjects match
-        if ($subject === $this->tierPriceUpdateObserver->getSubject()) {
-            $this->tierPriceUpdateObserver->deleteObsoleteTierPrices();
+        // query whether or not the tier prices has to be cleaned-up
+        /** @var \TechDivision\Import\Product\TierPrice\Subjects\TierPriceSubject $subject */
+        if ($subject->getConfiguration()->hasParam(ConfigurationKeys::CLEAN_UP_TIER_PRICES)) {
+            if ($subject->getConfiguration()->getParam(ConfigurationKeys::CLEAN_UP_TIER_PRICES)) {
+                $this->getTierPriceProcessor()->cleanUpTierPrices($subject->getProcessedTierPrices());
+            }
         }
     }
 }

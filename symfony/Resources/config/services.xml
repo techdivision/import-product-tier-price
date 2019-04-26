@@ -24,6 +24,9 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
+
+        <service id="import_product_tier_price.utils.value.types" class="TechDivision\Import\Product\TierPrice\Utils\ValueTypes"/>
+
         <service id="import_product_tier_price.repository.sql.statement" class="TechDivision\Import\Product\TierPrice\Repositories\SqlStatementRepository"/>
         <service id="import_product_tier_price.repository.tier_price" class="TechDivision\Import\Product\TierPrice\Repositories\TierPriceRepository">
             <argument type="service" id="connection"/>
@@ -56,13 +59,21 @@
         <service id="import_product_tier_price.processor.tier_price" class="TechDivision\Import\Product\TierPrice\Services\TierPriceProcessor">
             <argument type="service" id="connection"/>
             <argument type="service" id="import_product_tier_price.repository.tier_price"/>
-            <argument type="service" id="import_product_ee.repository.product"/>
             <argument type="service" id="import_product_tier_price.action.tier_price"/>
         </service>
 
         <service id="import_product_tier_price.observer.product.tier_price" class="TechDivision\Import\Product\TierPrice\Observers\ProductTierPriceObserver"/>
+        <service id="import_product_tier_price.observer.tier_price" class="TechDivision\Import\Product\TierPrice\Observers\TierPriceObserver">
+            <argument type="service" id="import_product_tier_price.processor.tier_price"/>
+            <argument type="service" id="import_product_tier_price.utils.value.types"/>
+        </service>
         <service id="import_product_tier_price.observer.tier_price.update" class="TechDivision\Import\Product\TierPrice\Observers\TierPriceUpdateObserver">
             <argument type="service" id="import_product_tier_price.processor.tier_price"/>
+            <argument type="service" id="import_product_tier_price.utils.value.types"/>
+        </service>
+        <service id="import_product_tier_price.observer.clear.tier_price" class="TechDivision\Import\Product\TierPrice\Observers\ClearTierPriceObserver">
+            <argument type="service" id="import_product_tier_price.processor.tier_price"/>
+            <argument type="service" id="import_product_tier_price.utils.value.types"/>
         </service>
 
         <service id="import_product_tier_price.subject.tier_price" class="TechDivision\Import\Product\TierPrice\Subjects\TierPriceSubject" shared="false">
@@ -70,11 +81,10 @@
             <argument type="service" id="import.generator.core.config.data.uid"/>
             <argument type="service" id="loggers"/>
             <argument type="service" id="import.events.emitter"/>
-            <argument type="service" id="import_product_tier_price.repository.customer_group"/>
         </service>
 
         <service id="import_product_tier_price.listener.delete.obsolete.tier_prices" class="TechDivision\Import\Product\TierPrice\Listeners\DeleteObsoleteTierPricesListener">
-            <argument type="service" id="import_product_tier_price.observer.tier_price.update"/>
+            <argument type="service" id="import_product_tier_price.processor.tier_price"/>
         </service>
     </services>
 </container>

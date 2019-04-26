@@ -22,14 +22,10 @@
 
 namespace TechDivision\Import\Product\TierPrice\Subjects;
 
-use League\Event\EmitterInterface;
-use Doctrine\Common\Collections\Collection;
-use TechDivision\Import\Utils\RegistryKeys;
 use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
 use TechDivision\Import\Product\Subjects\AbstractProductSubject;
-use TechDivision\Import\Services\RegistryProcessorInterface;
-use TechDivision\Import\Utils\Generators\GeneratorInterface;
-use TechDivision\Import\Product\TierPrice\Repositories\CustomerGroupRepositoryInterface;
+use TechDivision\Import\Product\TierPrice\Utils\RegistryKeys;
+use TechDivision\Import\Product\TierPrice\Utils\ConfigurationKeys;
 
 /**
  * Subject for processing tier prices.
@@ -46,91 +42,50 @@ class TierPriceSubject extends AbstractProductSubject
 {
 
     /**
-     * tier price value type: Fixed
-     *
-     * @var string
-     */
-    const VALUE_TYPE_FIXED = 'Fixed';
-
-    /**
-     * tier price value type: Discount
-     *
-     * @var string
-     */
-    const VALUE_TYPE_DISCOUNT = 'Discount';
-
-    /**
-     * tier price website code: All Websites
-     *
-     * @var string
-     */
-    const WEBSITE_CODE_ALL_WEBSITES = 'All Websites';
-
-    /**
-     * tier price website ID: All Websites
-     *
-     * @var int
-     */
-    const WEBSITE_ID_ALL_WEBSITES = 0;
-
-    /**
-     * tier price customer group code: ALL GROUPS
+     * The tier price customer group code for all groups.
      *
      * @var string
      */
     const CUSTOMER_GROUP_CODE_ALL_GROUPS = 'ALL GROUPS';
 
     /**
-     * tier price customer group ID: ALL GROUPS
+     * The tier price website code for all websites.
      *
-     * @var int
+     * @var string
      */
-    const CUSTOMER_GROUP_ID_ALL_GROUPS = 0;
+    const WEBSITE_CODE_ALL_WEBSITES = 'All Websites';
 
     /**
-     * The repository to load the customer groups with.
-     *
-     * @var \TechDivision\Import\Product\TierPrice\Repositories\CustomerGroupRepositoryInterface
-     */
-    protected $customerGroupRepository;
-
-    /**
-     * Holds the array mapping product row IDs to SKUs.
+     * The array with the default customer group code mappings.
      *
      * @var array
      */
-    protected $productSkusByRowId = array();
+    protected $customerGroupCodeMappings = array(
+        TierPriceSubject::CUSTOMER_GROUP_CODE_ALL_GROUPS => 'NOT LOGGED IN'
+    );
 
     /**
-     * Caches the existing customer groups.
+     * The array with the default website code mappings.
      *
      * @var array
      */
-    protected $customerGroups = null;
+    protected $websiteCodeMappings = array(
+        TierPriceSubject::WEBSITE_CODE_ALL_WEBSITES => 'admin'
+    );
 
     /**
-     * Initializes the subject with the necessary instances.
+     * The existing customer groups.
      *
-     * @param \TechDivision\Import\Services\RegistryProcessorInterface                             $registryProcessor          The registry processor instance
-     * @param \TechDivision\Import\Utils\Generators\GeneratorInterface                             $coreConfigDataUidGenerator The UID generator for the core config data
-     * @param \Doctrine\Common\Collections\Collection                                              $systemLoggers              The array with the system loggers instances
-     * @param \League\Event\EmitterInterface                                                       $emitter                    The event emitter instance
-     * @param \TechDivision\Import\Product\TierPrice\Repositories\CustomerGroupRepositoryInterface $customerGroupRepository    The repository to load the customer groups with
+     * @var array
      */
-    public function __construct(
-        RegistryProcessorInterface $registryProcessor,
-        GeneratorInterface $coreConfigDataUidGenerator,
-        Collection $systemLoggers,
-        EmitterInterface $emitter,
-        CustomerGroupRepositoryInterface $customerGroupRepository
-    ) {
+    protected $customerGroups = array();
 
-        // invoke the parent instance3
-        parent::__construct($registryProcessor, $coreConfigDataUidGenerator, $systemLoggers, $emitter);
-
-        // set the customer group repository instance
-        $this->customerGroupRepository = $customerGroupRepository;
-    }
+    /**
+     * The array that contains the IDs of the processed tier prices
+     *
+     * @var array
+     */
+    protected $processedTierPrices = array();
 
     /**
      * Intializes the previously loaded global data for exactly one variants.
@@ -145,43 +100,78 @@ class TierPriceSubject extends AbstractProductSubject
         // invoke the parent method
         parent::setUp($serial);
 
-        // load the entity manager and the registry processor
+        // load the status of the actual import process
+        $status = $this->getRegistryProcessor()->getAttribute($serial);
+
+        // load the available customer groups from the registry
+        $this->customerGroups = $status[RegistryKeys::GLOBAL_DATA][RegistryKeys::CUSTOMER_GROUPS];
+
+        // load the value IDs of the processed tier prices
+        if (isset($status[RegistryKeys::PROCESSED_TIER_PRICES])) {
+            $this->processedTierPrices = $status[RegistryKeys::PROCESSED_TIER_PRICES];
+        }
+
+        // merge the customer group code mappings from the configuration
+        if ($this->getConfiguration()->hasParam(ConfigurationKeys::CUSTOMER_GROUP_CODE_MAPPINGS)) {
+            foreach ($this->getConfiguration()->hasParam(ConfigurationKeys::CUSTOMER_GROUP_CODE_MAPPINGS) as $row => $system) {
+                $this->customerGroupCodeMappings[$row] = $system;
+            }
+        }
+
+        // merge the website code mappings from the configuration
+        if ($this->getConfiguration()->hasParam(ConfigurationKeys::WEBSITE_CODE_MAPPINGS)) {
+            foreach ($this->getConfiguration()->hasParam(ConfigurationKeys::WEBSITE_CODE_MAPPINGS) as $row => $system) {
+                $this->websiteCodeMappings[$row] = $system;
+            }
+        }
+    }
+
+    /**
+     * Clean up the global data after importing the bunch.
+     *
+     * @param string $serial The serial of the actual import
+     *
+     * @return void
+     */
+    public function tearDown($serial)
+    {
+
+        // load the registry processor
         $registryProcessor = $this->getRegistryProcessor();
 
-        // load the status of the actual import process
-        $status = $registryProcessor->getAttribute($serial);
+        // update the status
+        $registryProcessor->mergeAttributesRecursive(
+            $serial,
+            array(
+                RegistryKeys::PROCESSED_TIER_PRICES => $this->processedTierPrices
+            )
+        );
 
-        // load the attribute set we've prepared intially
-        if (isset($status[RegistryKeys::SKU_ROW_ID_MAPPING])) {
-            $this->productSkusByRowId = array_flip($status[RegistryKeys::SKU_ROW_ID_MAPPING]);
-        }
+        // invoke the parent method
+        parent::tearDown($serial);
     }
 
     /**
-     * Returns the repository to load the customer groups with.
+     * Add the ID of the processed tier price.
      *
-     * @return \TechDivision\Import\Product\TierPrice\Repositories\CustomerGroupRepositoryInterface The repository instance
+     * @param integer $valueId  The ID of the processed tier price
+     * @param integer $entityId The entity ID of the related product
+     *
+     * @return void
      */
-    public function getCustomerGroupRepository()
+    public function addProcessedTierPrice($valueId, $entityId)
     {
-        return $this->customerGroupRepository;
+        $this->processedTierPrices[$valueId][] = $entityId;
     }
 
     /**
-     * Returns all customer groups
+     * Returns the array with the processed tier prices.
      *
-     * @return array
+     * @return array The array with the processed tier prices
      */
-    public function getCustomerGroups()
+    public function getProcessedTierPrices()
     {
-
-        // query whether or not the customer groups has already been initialized
-        if ($this->customerGroups == null) {
-            $this->customerGroups = $this->getCustomerGroupRepository()->findAll();
-        }
-
-        // return the customer groups
-        return $this->customerGroups;
+        return $this->processedTierPrices;
     }
 
     /**
@@ -189,32 +179,72 @@ class TierPriceSubject extends AbstractProductSubject
      *
      * @param string $code The code of the requested customer group
      *
-     * @return integer|null The ID of the customer group
+     * @return integer The ID of the customer group
+     * @throws \Exception Is thrown, if the customer group with the passed ID is NOT available
      */
-    public function getCustomerGroupIdForCode($code)
+    public function getCustomerGroupIdByCode($code)
     {
 
-        // load the customer groups
-        $customerGroups = $this->getCustomerGroups();
-
-        // query whether or not the customer group with the passed code is available
-        if (isset($customerGroups[$code])) {
-            return $customerGroups[$code][MemberNames::CUSTOMER_GROUP_ID];
+        // map the customer group code and query whether or not the customer group with the passed code is available
+        if (isset($this->customerGroups[$code = $this->mapCustomerGroupCode($code)])) {
+            return (integer) $this->customerGroups[$code][MemberNames::CUSTOMER_GROUP_ID];
         }
 
-        // return NULL otherwise
-        return;
+        // throw an exception if the customer group with the passed code is NOT available
+        throw new \Exception(
+            $this->appendExceptionSuffix(
+                sprintf('Found invalid customer group "%s"', $code)
+            )
+        );
     }
 
     /**
-     * Indicates whether the product with the given row ID has been processed in the import.
+     * Return's the store website for the passed code.
      *
-     * @param integer $rowId The row ID to query for for
+     * @param string $code The code of the store website to return the ID for
      *
-     * @return boolean TRUE if the product has been processed, else FALSE
+     * @return integer The store website ID
+     * @throws \Exception Is thrown, if the store website with the requested code is not available
+     * @see \TechDivision\Import\Product\Subjects\AbstractProductSubject::getStoreWebsiteIdByCode()
      */
-    public function rowIdHasBeenProcessed($rowId)
+    public function getStoreWebsiteIdByCode($code)
     {
-        return isset($this->productSkusByRowId[$rowId]);
+        return parent::getStoreWebsiteIdByCode($this->mapWebsiteCode($code));
+    }
+
+    /**
+     * Queries whether or not the passed customer group code matches all groups or not.
+     *
+     * @param string $code The customer group code to query for
+     *
+     * @return boolean TRUE if the customer group code matches, else FALSE
+     */
+    public function isAllGroups($code)
+    {
+        return TierPriceSubject::CUSTOMER_GROUP_CODE_ALL_GROUPS === strtoupper($code);
+    }
+
+    /**
+     * Maps the passed customer group code, if a mapping is available.
+     *
+     * @param string $code The customer group code to map
+     *
+     * @return string The mapped customer group code
+     */
+    protected function mapCustomerGroupCode($code)
+    {
+        return isset($this->customerGroupCodeMappings[$code]) ? $this->customerGroupCodeMappings[$code] : $code;
+    }
+
+    /**
+     * Maps the passed website code, if a mapping is available.
+     *
+     * @param string $code The website code to map
+     *
+     * @return string The mapped website code
+     */
+    protected function mapWebsiteCode($code)
+    {
+        return isset($this->websiteCodeMappings[$code]) ? $this->websiteCodeMappings[$code] : $code;
     }
 }

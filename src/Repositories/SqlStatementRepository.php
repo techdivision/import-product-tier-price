@@ -47,6 +47,14 @@ class SqlStatementRepository extends \TechDivision\Import\Repositories\SqlStatem
         SqlStatementKeys::TIER_PRICES =>
             'SELECT *
                FROM catalog_product_entity_tier_price',
+        SqlStatementKeys::TIER_PRICE_BY_ENTITY_ID_AND_ALL_GROUPS_AND_CUSTOMER_GROUP_ID_AND_QTY_AND_WEBSITE_ID =>
+            'SELECT *
+               FROM catalog_product_entity_tier_price
+              WHERE entity_id = :entity_id
+                AND all_groups = :all_groups
+                AND customer_group_id = :customer_group_id
+                AND qty = :qty
+                AND website_id = :website_id',
         SqlStatementKeys::DELETE_TIER_PRICE =>
             'DELETE
                FROM catalog_product_entity_tier_price
@@ -60,14 +68,14 @@ class SqlStatementRepository extends \TechDivision\Import\Repositories\SqlStatem
                      value,
                      website_id,
                      percentage_value,
-                     row_id)
+                     entity_id)
              VALUES (:all_groups,
                      :customer_group_id,
                      :qty,
                      :value,
                      :website_id,
                      :percentage_value,
-                     :row_id)',
+                     :entity_id)',
         SqlStatementKeys::UPDATE_TIER_PRICE =>
             'UPDATE catalog_product_entity_tier_price
                 SET all_groups = :all_groups,
@@ -76,11 +84,8 @@ class SqlStatementRepository extends \TechDivision\Import\Repositories\SqlStatem
                     value = :value,
                     website_id = :website_id,
                     percentage_value = :percentage_value,
-                    row_id = :row_id
-              WHERE value_id = :value_id',
-        SqlStatementKeys::CUSTOMER_GROUPS =>
-            'SELECT *
-                FROM customer_group'
+                    entity_id = :entity_id
+              WHERE value_id = :value_id'
     );
 
     /**
