@@ -16,11 +16,6 @@
       "app.tear.down" : [
         "import.listener.clear.registry"
       ]
-    },
-    {
-      "subject.artefact.process.success" : [
-        "import_product_tier_price.listener.delete.obsolete.tier_prices"
-      ]
     }
   ],
   "databases" : [
@@ -67,7 +62,7 @@
               "ok-file-needed": true
             },
             {
-              "id": "import_product_ee.subject.bunch",
+              "id": "import_product_tier_price.subject.tier_price",
               "identifier": "files",
               "file-resolver": {
                 "prefix": "product-import-tier-price"
@@ -75,7 +70,8 @@
               "observers": [
                 {
                   "import": [
-                    "import_product_tier_price.observer.clear.tier.price"
+                    "import_product.observer.last.entity.id",
+                    "import_product_tier_price.observer.clear.tier_price"
                   ]
                 }
               ]
@@ -108,20 +104,16 @@
               "ok-file-needed": true
             },
             {
-              "id": "import_product_ee.subject.bunch",
+              "id": "import_product_tier_price.subject.tier_price",
               "identifier": "files",
               "file-resolver": {
                 "prefix": "product-import-tier-price"
               },
-              "params" : [
-                {
-                  "clean-up-tier-prices" : true
-                }
-              ],
               "observers": [
                 {
                   "import": [
-                    "import_product_tier_price.observer.clear.tier.price"
+                    "import_product.observer.last.entity.id",
+                    "import_product_tier_price.observer.clear.tier_price",
                     "import_product_tier_price.observer.tier_price"
                   ]
                 }
@@ -136,6 +128,13 @@
     },
     {
       "name" : "add-update",
+      "listeners" : [
+        {
+          "subject.artefact.process.success" : [
+            "import_product_tier_price.listener.delete.obsolete.tier_prices"
+          ]
+        }
+      ],
       "plugins" : [
         {
           "id": "import.plugin.cache.warmer"
@@ -155,7 +154,7 @@
               "ok-file-needed": true
             },
             {
-              "id": "import_product_ee.subject.bunch",
+              "id": "import_product_tier_price.subject.tier_price",
               "identifier": "files",
               "file-resolver": {
                 "prefix": "product-import-tier-price"
@@ -168,6 +167,7 @@
               "observers": [
                 {
                   "import": [
+                    "import_product.observer.last.entity.id",
                     "import_product_tier_price.observer.tier_price.update"
                   ]
                 }
