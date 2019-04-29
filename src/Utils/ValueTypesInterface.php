@@ -54,6 +54,20 @@ interface ValueTypesInterface
     public function isValueType($valueType);
 
     /**
+     * Returns the key for the fixed value type.
+     *
+     * @return string The key
+     */
+    public function getFixed();
+
+    /**
+     * Returns the key for the discount value type.
+     *
+     * @return string The key
+     */
+    public function getDiscount();
+
+    /**
      * Queries whether or not the passed value type is fixed.
      *
      * @param string $valueType The value type to query for

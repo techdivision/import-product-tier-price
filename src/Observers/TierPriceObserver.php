@@ -25,6 +25,7 @@ namespace TechDivision\Import\Product\TierPrice\Observers;
 use TechDivision\Import\Product\Observers\AbstractProductImportObserver;
 use TechDivision\Import\Product\TierPrice\Utils\ValueTypesInterface;
 use TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface;
+use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
 
 /**
  * Observer for creating/updating/deleting tier prices from the database.
@@ -101,9 +102,14 @@ class TierPriceObserver extends AbstractProductImportObserver
      */
     protected function process()
     {
+
+        // intialize the tier price data
+        $tierPrice = $this->initializeTierPrice($this->prepareAttributes());
+
+        // persist the tier price and mark it as processed
         $this->addProcessedTierPrice(
-            $this->persistTierPrice($this->initializeTierPrice($this->prepareAttributes())),
-            $this->getLastEntityId()
+            $this->persistTierPrice($tierPrice),
+            $tierPrice[MemberNames::ENTITY_ID]
         );
     }
 
@@ -118,6 +124,18 @@ class TierPriceObserver extends AbstractProductImportObserver
     protected function initializeTierPrice(array $attr)
     {
         return $attr;
+    }
+
+    /**
+     * Loads and returns the product with the passed SKU.
+     *
+     * @param string $sku The SKU of the product to load
+     *
+     * @return array The product
+     */
+    protected function loadProduct($sku)
+    {
+        return $this->getTierPriceProcessor()->loadProduct($sku);
     }
 
     /**
@@ -193,5 +211,17 @@ class TierPriceObserver extends AbstractProductImportObserver
     protected function isAllGroups($code)
     {
         return $this->getSubject()->isAllGroups($code);
+    }
+
+    /**
+     * Set's the ID of the product that has been created recently.
+     *
+     * @param string $lastEntityId The entity ID
+     *
+     * @return void
+     */
+    protected function setLastEntityId($lastEntityId)
+    {
+        $this->getSubject()->setLastEntityId($lastEntityId);
     }
 }

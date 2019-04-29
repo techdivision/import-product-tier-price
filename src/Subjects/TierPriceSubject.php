@@ -22,10 +22,11 @@
 
 namespace TechDivision\Import\Product\TierPrice\Subjects;
 
+use TechDivision\Import\Product\TierPrice\Utils\DefaultCodes;
 use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
-use TechDivision\Import\Product\Subjects\AbstractProductSubject;
 use TechDivision\Import\Product\TierPrice\Utils\RegistryKeys;
 use TechDivision\Import\Product\TierPrice\Utils\ConfigurationKeys;
+use TechDivision\Import\Product\Subjects\AbstractProductSubject;
 
 /**
  * Subject for processing tier prices.
@@ -42,26 +43,12 @@ class TierPriceSubject extends AbstractProductSubject
 {
 
     /**
-     * The tier price customer group code for all groups.
-     *
-     * @var string
-     */
-    const CUSTOMER_GROUP_CODE_ALL_GROUPS = 'ALL GROUPS';
-
-    /**
-     * The tier price website code for all websites.
-     *
-     * @var string
-     */
-    const WEBSITE_CODE_ALL_WEBSITES = 'All Websites';
-
-    /**
      * The array with the default customer group code mappings.
      *
      * @var array
      */
     protected $customerGroupCodeMappings = array(
-        TierPriceSubject::CUSTOMER_GROUP_CODE_ALL_GROUPS => 'NOT LOGGED IN'
+        DefaultCodes::ALL_GROUPS => 'NOT LOGGED IN'
     );
 
     /**
@@ -70,7 +57,7 @@ class TierPriceSubject extends AbstractProductSubject
      * @var array
      */
     protected $websiteCodeMappings = array(
-        TierPriceSubject::WEBSITE_CODE_ALL_WEBSITES => 'admin'
+        DefaultCodes::ALL_WEBSITES => 'admin'
     );
 
     /**
@@ -221,7 +208,7 @@ class TierPriceSubject extends AbstractProductSubject
      */
     public function isAllGroups($code)
     {
-        return TierPriceSubject::CUSTOMER_GROUP_CODE_ALL_GROUPS === strtoupper($code);
+        return DefaultCodes::ALL_GROUPS === strtoupper($code);
     }
 
     /**

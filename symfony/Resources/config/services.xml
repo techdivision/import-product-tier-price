@@ -59,10 +59,13 @@
         <service id="import_product_tier_price.processor.tier_price" class="TechDivision\Import\Product\TierPrice\Services\TierPriceProcessor">
             <argument type="service" id="connection"/>
             <argument type="service" id="import_product_tier_price.repository.tier_price"/>
+            <argument type="service" id="import_product.repository.product"/>
             <argument type="service" id="import_product_tier_price.action.tier_price"/>
         </service>
 
-        <service id="import_product_tier_price.observer.product.tier_price" class="TechDivision\Import\Product\TierPrice\Observers\ProductTierPriceObserver"/>
+        <service id="import_product_tier_price.observer.product.tier_price" class="TechDivision\Import\Product\TierPrice\Observers\ProductTierPriceObserver">
+            <argument type="service" id="import_product_tier_price.utils.value.types"/>
+        </service>
         <service id="import_product_tier_price.observer.tier_price" class="TechDivision\Import\Product\TierPrice\Observers\TierPriceObserver">
             <argument type="service" id="import_product_tier_price.processor.tier_price"/>
             <argument type="service" id="import_product_tier_price.utils.value.types"/>

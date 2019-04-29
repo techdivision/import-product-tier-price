@@ -75,15 +75,18 @@ class TierPriceProcessor implements TierPriceProcessorInterface
      *
      * @param \TechDivision\Import\Connection\ConnectionInterface                              $connection          The \PDO connnection instance
      * @param \TechDivision\Import\Product\TierPrice\Repositories\TierPriceRepositoryInterface $tierPriceRepository The repository to load the tier prices with
+     * @param \TechDivision\Import\Product\Repositories\ProductRepositoryInterface             $productRepository   The repository to load the products with
      * @param \TechDivision\Import\Actions\ActionInterface                                     $tierPriceAction     The action for tier price  CRUD methods
      */
     public function __construct(
         ConnectionInterface $connection,
         TierPriceRepositoryInterface $tierPriceRepository,
+        ProductRepositoryInterface $productRepository,
         ActionInterface $tierPriceAction
     ) {
         $this->setConnection($connection);
         $this->setTierPriceRepository($tierPriceRepository);
+        $this->setProductRepository($productRepository);
         $this->setTierPriceAction($tierPriceAction);
     }
 
@@ -195,6 +198,40 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     public function getTierPriceRepository()
     {
         return $this->tierPriceRepository;
+    }
+
+    /**
+     * Sets the repository to load the products with.
+     *
+     * @param \TechDivision\Import\Product\Repositories\ProductRepositoryInterface $productRepository The repository instance
+     *
+     * @return void
+     */
+    public function setProductRepository(ProductRepositoryInterface $productRepository)
+    {
+        $this->productRepository = $productRepository;
+    }
+
+    /**
+     * Returns the repository to load the products with.
+     *
+     * @return \TechDivision\Import\Product\Repositories\ProductRepositoryInterface The repository instance
+     */
+    public function getProductRepository()
+    {
+        return $this->productRepository;
+    }
+
+    /**
+     * Load's and return's the product with the passed SKU.
+     *
+     * @param string $sku The SKU of the product to load
+     *
+     * @return array The product
+     */
+    public function loadProduct($sku)
+    {
+        return $this->getProductRepository()->findOneBySku($sku);
     }
 
     /**
