@@ -60,6 +60,26 @@ class ValueTypes extends \ArrayObject implements ValueTypesInterface
     }
 
     /**
+     * Returns the key for the fixed value type.
+     *
+     * @return string The key
+     */
+    public function getFixed()
+    {
+        return ValueTypes::FIXED;
+    }
+
+    /**
+     * Returns the key for the discount value type.
+     *
+     * @return string The key
+     */
+    public function getDiscount()
+    {
+        return ValueTypes::DISCOUNT;
+    }
+
+    /**
      * Queries whether or not the passed value type is fixed.
      *
      * @param string $valueType The value type to query for
@@ -68,7 +88,7 @@ class ValueTypes extends \ArrayObject implements ValueTypesInterface
      */
     public function isFixed($valueType)
     {
-        return ValueTypesInterface::FIXED === strtolower($valueType);
+        return $this->getFixed() === strtolower($valueType);
     }
 
     /**
@@ -80,6 +100,6 @@ class ValueTypes extends \ArrayObject implements ValueTypesInterface
      */
     public function isDiscount($valueType)
     {
-        return ValueTypesInterface::DISCOUNT === strtolower($valueType);
+        return $this->getDiscount() === strtolower($valueType);
     }
 }

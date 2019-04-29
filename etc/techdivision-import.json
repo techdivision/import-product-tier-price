@@ -70,7 +70,6 @@
               "observers": [
                 {
                   "import": [
-                    "import_product.observer.last.entity.id",
                     "import_product_tier_price.observer.clear.tier_price"
                   ]
                 }
@@ -112,7 +111,6 @@
               "observers": [
                 {
                   "import": [
-                    "import_product.observer.last.entity.id",
                     "import_product_tier_price.observer.clear.tier_price",
                     "import_product_tier_price.observer.tier_price"
                   ]
@@ -167,7 +165,6 @@
               "observers": [
                 {
                   "import": [
-                    "import_product.observer.last.entity.id",
                     "import_product_tier_price.observer.tier_price.update"
                   ]
                 }

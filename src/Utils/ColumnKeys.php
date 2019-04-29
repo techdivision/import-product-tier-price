@@ -37,6 +37,34 @@ class ColumnKeys extends \TechDivision\Import\Product\Utils\ColumnKeys
 {
 
     /**
+     * Name for the column `customer_group`.
+     *
+     * @var string
+     */
+    const CUSTOMER_GROUP = 'customer_group';
+
+    /**
+     * Name for the column `website`.
+     *
+     * @var string
+     */
+    const WEBSITE = 'website';
+
+    /**
+     * Name for the column `price`.
+     *
+     * @var string
+     */
+    const PRICE = 'price';
+
+    /**
+     * Name for the column `value_type`.
+     *
+     * @var string
+     */
+    const VALUE_TYPE = 'value_type';
+
+    /**
      * Name for the column `tier_prices`.
      *
      * @var string

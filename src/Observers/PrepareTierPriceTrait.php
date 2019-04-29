@@ -41,8 +41,20 @@ trait PrepareTierPriceTrait
     protected function prepareAttributes()
     {
 
-        // load the SKU
-        $sku = $this->getValue(ColumnKeys::SKU);
+        // try to load the entity ID for the product with the passed SKU
+        if ($product = $this->loadProduct($sku = $this->getValue(ColumnKeys::SKU))) {
+            $this->setLastEntityId($entityId = $product[MemberNames::ENTITY_ID]);
+        } else {
+            // prepare a log message
+            $message = sprintf('Product with SKU "%s" can\'t be loaded to create URL rewrites', $sku);
+            // query whether or not we're in debug mode
+            if ($this->getSubject()->isDebugMode()) {
+                $this->getSubject()->getSystemLogger()->warning($message);
+                return $this->getRow();
+            } else {
+                throw new \Exception($message);
+            }
+        }
 
         // load tier price quantity and pricde
         $qty = $this->getValue(ColumnKeys::TIER_PRICE_QTY);
@@ -62,9 +74,6 @@ trait PrepareTierPriceTrait
             // map website and customer group code into their IDs
             $websiteId = $this->getStoreWebsiteIdByCode($this->getValue(ColumnKeys::TIER_PRICE_WEBSITE));
             $customerGroupId = $this->getCustomerGroupIdByCode($customerGroupCode = $this->getValue(ColumnKeys::TIER_PRICE_CUSTOMER_GROUP));
-
-            // load the last entity ID
-            $entityId = $this->getLastEntityId();
 
             // query whether or not the tier price is valid for ALL GROUPS
             $allGroups = (integer) $this->isAllGroups($customerGroupCode);
@@ -94,6 +103,15 @@ trait PrepareTierPriceTrait
             )
         );
     }
+
+    /**
+     * Load's and return's the product with the passed SKU.
+     *
+     * @param string $sku The SKU of the product to load
+     *
+     * @return array The product
+     */
+    abstract protected function loadProduct($sku);
 
     /**
      * Resolve's the value with the passed colum name from the actual row. If a callback will
@@ -171,4 +189,13 @@ trait PrepareTierPriceTrait
      * @return boolean TRUE if the customer group code matches, else FALSE
      */
     abstract protected function isAllGroups($code);
+
+    /**
+     * Set's the ID of the product that has been created recently.
+     *
+     * @param string $lastEntityId The entity ID
+     *
+     * @return void
+     */
+    abstract protected function setLastEntityId($lastEntityId);
 }

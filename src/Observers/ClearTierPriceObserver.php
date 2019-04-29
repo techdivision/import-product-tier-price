@@ -114,6 +114,18 @@ class ClearTierPriceObserver extends AbstractProductImportObserver
     }
 
     /**
+     * Loads and returns the product with the passed SKU.
+     *
+     * @param string $sku The SKU of the product to load
+     *
+     * @return array The product
+     */
+    protected function loadProduct($sku)
+    {
+        return $this->getTierPriceProcessor()->loadProduct($sku);
+    }
+
+    /**
      * Returns the tier price with the given parameters.
      *
      * @param string  $entityId        The entity ID of the product relation
@@ -189,5 +201,17 @@ class ClearTierPriceObserver extends AbstractProductImportObserver
     protected function isAllGroups($code)
     {
         return $this->getSubject()->isAllGroups($code);
+    }
+
+    /**
+     * Set's the ID of the product that has been created recently.
+     *
+     * @param string $lastEntityId The entity ID
+     *
+     * @return void
+     */
+    protected function setLastEntityId($lastEntityId)
+    {
+        $this->getSubject()->setLastEntityId($lastEntityId);
     }
 }
