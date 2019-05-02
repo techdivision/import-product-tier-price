@@ -23,6 +23,7 @@
 namespace TechDivision\Import\Product\TierPrice\Services;
 
 use TechDivision\Import\Actions\ActionInterface;
+use TechDivision\Import\Utils\PrimaryKeyUtilInterface;
 use TechDivision\Import\Connection\ConnectionInterface;
 use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
 use TechDivision\Import\Product\Repositories\ProductRepositoryInterface;
@@ -50,6 +51,13 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     protected $connection;
 
     /**
+     * The primary key util instance.
+     *
+     * @var \TechDivision\Import\Utils\PrimaryKeyUtilInterface
+     */
+    protected $primaryKeyUtil;
+
+    /**
      * The action for tier price  CRUD methods.
      *
      * @var \TechDivision\Import\Actions\ActionInterface
@@ -74,17 +82,20 @@ class TierPriceProcessor implements TierPriceProcessorInterface
      * Initialize the processor with the necessary assembler and repository instances.
      *
      * @param \TechDivision\Import\Connection\ConnectionInterface                              $connection          The \PDO connnection instance
+     * @param \TechDivision\Import\Utils\PrimaryKeyUtilInterface                               $primaryKeyUtil      The primary key util
      * @param \TechDivision\Import\Product\TierPrice\Repositories\TierPriceRepositoryInterface $tierPriceRepository The repository to load the tier prices with
      * @param \TechDivision\Import\Product\Repositories\ProductRepositoryInterface             $productRepository   The repository to load the products with
      * @param \TechDivision\Import\Actions\ActionInterface                                     $tierPriceAction     The action for tier price  CRUD methods
      */
     public function __construct(
         ConnectionInterface $connection,
+        PrimaryKeyUtilInterface $primaryKeyUtil,
         TierPriceRepositoryInterface $tierPriceRepository,
         ProductRepositoryInterface $productRepository,
         ActionInterface $tierPriceAction
     ) {
         $this->setConnection($connection);
+        $this->setPrimaryKeyUtil($primaryKeyUtil);
         $this->setTierPriceRepository($tierPriceRepository);
         $this->setProductRepository($productRepository);
         $this->setTierPriceAction($tierPriceAction);
@@ -110,6 +121,39 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     public function getConnection()
     {
         return $this->connection;
+    }
+
+    /**
+     * Sets the passed primary key util instance.
+     *
+     * @param \TechDivision\Import\Utils\PrimaryKeyUtilInterface $primaryKeyUtil The primary key util instance
+     *
+     * @return void
+     */
+    public function setPrimaryKeyUtil(PrimaryKeyUtilInterface $primaryKeyUtil)
+    {
+        $this->primaryKeyUtil = $primaryKeyUtil;
+    }
+
+    /**
+     * Returns the primary key util instance.
+     *
+     * @return \TechDivision\Import\Utils\PrimaryKeyUtilInterface The primary key util instance
+     */
+    public function getPrimaryKeyUtil()
+    {
+        return $this->primaryKeyUtil;
+    }
+
+    /**
+     * Returns the primary key member name for the actual Magento edition.
+     *
+     * @return string The primary key member name
+     * @see \TechDivision\Import\Utils\PrimaryKeyUtilInterface::getPrimaryKeyMemberName()
+     */
+    public function getPrimaryKeyMemberName()
+    {
+        return $this->getPrimaryKeyUtil()->getPrimaryKeyMemberName();
     }
 
     /**
@@ -247,7 +291,7 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     /**
      * Returns the tier price with the given parameters.
      *
-     * @param string  $entityId        The entity ID of the product relation
+     * @param string  $pk              The PK of the product relation
      * @param integer $allGroups       The flag if all groups are affected or not
      * @param integer $customerGroupId The customer group ID
      * @param integer $qty             The tier price quantity
@@ -255,9 +299,9 @@ class TierPriceProcessor implements TierPriceProcessorInterface
      *
      * @return array The tier price
      */
-    public function loadTierPriceByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($entityId, $allGroups, $customerGroupId, $qty, $websiteId)
+    public function loadTierPriceByPkAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($pk, $allGroups, $customerGroupId, $qty, $websiteId)
     {
-        return $this->getTierPriceRepository()->findOneByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($entityId, $allGroups, $customerGroupId, $qty, $websiteId);
+        return $this->getTierPriceRepository()->findOneByPkAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($pk, $allGroups, $customerGroupId, $qty, $websiteId);
     }
 
     /**
@@ -304,7 +348,7 @@ class TierPriceProcessor implements TierPriceProcessorInterface
             // if imported, we continue
             if (isset($processedTierPrices[$tierPrice[MemberNames::VALUE_ID]])) {
                 // if the product has been touched by the import, delete the tier price
-                if (in_array($tierPrice[MemberNames::ENTITY_ID], $processedTierPrices[$tierPrice[MemberNames::VALUE_ID]])) {
+                if (in_array($tierPrice[$this->getPrimaryKeyMemberName()], $processedTierPrices[$tierPrice[MemberNames::VALUE_ID]])) {
                     continue;
                 }
 

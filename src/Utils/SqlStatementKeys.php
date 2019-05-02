@@ -48,7 +48,7 @@ class SqlStatementKeys extends \TechDivision\Import\Utils\SqlStatementKeys
      *
      * @var string
      */
-    const TIER_PRICE_BY_ENTITY_ID_AND_ALL_GROUPS_AND_CUSTOMER_GROUP_ID_AND_QTY_AND_WEBSITE_ID = 'tier_price.by.entity_id.and.all_groups.and.customer_group_id.and.qty.and.website_id';
+    const TIER_PRICE_BY_PK_AND_ALL_GROUPS_AND_CUSTOMER_GROUP_ID_AND_QTY_AND_WEBSITE_ID = 'tier_price.by.pk.and.all_groups.and.customer_group_id.and.qty.and.website_id';
 
     /**
      * The SQL statement to remove an existing product tier price.

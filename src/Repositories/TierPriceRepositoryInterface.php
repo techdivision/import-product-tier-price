@@ -46,7 +46,7 @@ interface TierPriceRepositoryInterface
     /**
      * Returns the tier price with the given parameters.
      *
-     * @param string  $entityId        The entity ID of the product relation
+     * @param string  $pk              The PK of the product relation
      * @param integer $allGroups       The flag if all groups are affected or not
      * @param integer $customerGroupId The customer group ID
      * @param integer $qty             The tier price quantity
@@ -54,5 +54,5 @@ interface TierPriceRepositoryInterface
      *
      * @return array The tier price
      */
-    public function findOneByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($entityId, $allGroups, $customerGroupId, $qty, $websiteId);
+    public function findOneByPkAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($pk, $allGroups, $customerGroupId, $qty, $websiteId);
 }

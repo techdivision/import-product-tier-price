@@ -22,9 +22,12 @@
 
 namespace TechDivision\Import\Product\TierPrice\Repositories;
 
+use TechDivision\Import\Utils\PrimaryKeyUtilInterface;
+use TechDivision\Import\Connection\ConnectionInterface;
 use TechDivision\Import\Repositories\AbstractRepository;
 use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
 use TechDivision\Import\Product\TierPrice\Utils\SqlStatementKeys;
+use TechDivision\Import\Repositories\SqlStatementRepositoryInterface;
 
 /**
  * Default implementation of repository for accessing tier price data.
@@ -41,6 +44,13 @@ class TierPriceRepository extends AbstractRepository implements TierPriceReposit
 {
 
     /**
+     * The primary key util instance.
+     *
+     * @var \TechDivision\Import\Utils\PrimaryKeyUtilInterface
+     */
+    protected $primaryKeyUtil;
+
+    /**
      * The prepared statement to load the existing tier prices.
      *
      * @var \PDOStatement
@@ -52,7 +62,48 @@ class TierPriceRepository extends AbstractRepository implements TierPriceReposit
      *
      * @var \PDOStatement
      */
-    protected $tierPriceByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteIdStmt;
+    protected $tierPriceByPkAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteIdStmt;
+
+    /**
+     * Initialize the repository with the passed connection and utility class name.
+     * .
+     * @param \TechDivision\Import\Connection\ConnectionInterface               $connection             The connection instance
+     * @param \TechDivision\Import\Repositories\SqlStatementRepositoryInterface $sqlStatementRepository The SQL repository instance
+     * @param \TechDivision\Import\Utils\PrimaryKeyUtilInterface                $primaryKeyUtil         The primary key util instance
+     */
+    public function __construct(
+        ConnectionInterface $connection,
+        SqlStatementRepositoryInterface $sqlStatementRepository,
+        PrimaryKeyUtilInterface $primaryKeyUtil
+    ) {
+
+        // pass the connection and the SQL statement repository through to the parent instance
+        parent::__construct($connection, $sqlStatementRepository);
+
+        // set the primary key util
+        $this->primaryKeyUtil = $primaryKeyUtil;
+    }
+
+    /**
+     * Returns the primary key util instance.
+     *
+     * @return \TechDivision\Import\Utils\PrimaryKeyUtilInterface The primary key util instance
+     */
+    public function getPrimaryKeyUtil()
+    {
+        return $this->primaryKeyUtil;
+    }
+
+    /**
+     * Returns the primary key member name for the actual Magento edition.
+     *
+     * @return string The primary key member name
+     * @see \TechDivision\Import\Utils\PrimaryKeyUtilInterface::getPrimaryKeyMemberName()
+     */
+    public function getPrimaryKeyMemberName()
+    {
+        return $this->getPrimaryKeyUtil()->getPrimaryKeyMemberName();
+    }
 
     /**
      * Initializes the repository's prepared statements.
@@ -64,14 +115,14 @@ class TierPriceRepository extends AbstractRepository implements TierPriceReposit
         // initialize the prepared statements
         $this->tierPricesStmt =
             $this->getConnection()->prepare($this->loadStatement(SqlStatementKeys::TIER_PRICES));
-        $this->tierPriceByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteIdStmt =
-            $this->getConnection()->prepare($this->loadStatement(SqlStatementKeys::TIER_PRICE_BY_ENTITY_ID_AND_ALL_GROUPS_AND_CUSTOMER_GROUP_ID_AND_QTY_AND_WEBSITE_ID));
+        $this->tierPriceByPkAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteIdStmt =
+            $this->getConnection()->prepare($this->loadStatement(SqlStatementKeys::TIER_PRICE_BY_PK_AND_ALL_GROUPS_AND_CUSTOMER_GROUP_ID_AND_QTY_AND_WEBSITE_ID));
     }
 
     /**
      * Returns the tier price with the given parameters.
      *
-     * @param string  $entityId        The entity ID of the product relation
+     * @param string  $pk              The PK of the product relation
      * @param integer $allGroups       The flag if all groups are affected or not
      * @param integer $customerGroupId The customer group ID
      * @param integer $qty             The tier price quantity
@@ -79,21 +130,21 @@ class TierPriceRepository extends AbstractRepository implements TierPriceReposit
      *
      * @return array The tier price
      */
-    public function findOneByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($entityId, $allGroups, $customerGroupId, $qty, $websiteId)
+    public function findOneByPkAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($pk, $allGroups, $customerGroupId, $qty, $websiteId)
     {
 
         // initialize the params
         $params = array(
-            MemberNames::ENTITY_ID         => $entityId,
-            MemberNames::ALL_GROUPS        => $allGroups,
-            MemberNames::CUSTOMER_GROUP_ID => $customerGroupId,
-            MemberNames::QTY               => $qty,
-            MemberNames::WEBSITE_ID        => $websiteId
+            $this->getPrimaryKeyMemberName() => $pk,
+            MemberNames::ALL_GROUPS          => $allGroups,
+            MemberNames::CUSTOMER_GROUP_ID   => $customerGroupId,
+            MemberNames::QTY                 => $qty,
+            MemberNames::WEBSITE_ID          => $websiteId
         );
 
         // load and return the tier price with the passed params
-        $this->tierPriceByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteIdStmt->execute($params);
-        return $this->tierPriceByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteIdStmt->fetch(\PDO::FETCH_ASSOC);
+        $this->tierPriceByPkAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteIdStmt->execute($params);
+        return $this->tierPriceByPkAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteIdStmt->fetch(\PDO::FETCH_ASSOC);
     }
 
     /**

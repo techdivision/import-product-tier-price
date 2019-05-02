@@ -75,6 +75,13 @@ class TierPriceSubject extends AbstractProductSubject
     protected $processedTierPrices = array();
 
     /**
+     * The ID of the PK of the related product that has been processed recently.
+     *
+     * @var integer
+     */
+    protected $lastPk;
+
+    /**
      * Intializes the previously loaded global data for exactly one variants.
      *
      * @param string $serial The serial of the actual import
@@ -141,14 +148,14 @@ class TierPriceSubject extends AbstractProductSubject
     /**
      * Add the ID of the processed tier price.
      *
-     * @param integer $valueId  The ID of the processed tier price
-     * @param integer $entityId The entity ID of the related product
+     * @param integer $valueId The ID of the processed tier price
+     * @param integer $pk      The PK of the related product
      *
      * @return void
      */
-    public function addProcessedTierPrice($valueId, $entityId)
+    public function addProcessedTierPrice($valueId, $pk)
     {
-        $this->processedTierPrices[$valueId][] = $entityId;
+        $this->processedTierPrices[$valueId][] = $pk;
     }
 
     /**
@@ -183,6 +190,39 @@ class TierPriceSubject extends AbstractProductSubject
                 sprintf('Found invalid customer group "%s"', $code)
             )
         );
+    }
+
+    /**
+     * Set's the ID of the last PK used.
+     *
+     * @param integer $lastPk The PK
+     *
+     * @return void
+     */
+    public function setLastPk($lastPk)
+    {
+        $this->lastPk = $lastPk;
+    }
+
+    /**
+     * Returns the ID of the last PK used.
+     *
+     * @return integer The PK
+     */
+    public function getLastPk()
+    {
+        return $this->lastPk;
+    }
+
+    /**
+     * Return's the ID of the product that has been created recently.
+     *
+     * @return integer The entity Id
+     * @see \TechDivision\Import\Product\Subjects\AbstractProductSubject::getLastEntityId()
+     */
+    public function getLastEntityId()
+    {
+        return $this->getLastPk();
     }
 
     /**

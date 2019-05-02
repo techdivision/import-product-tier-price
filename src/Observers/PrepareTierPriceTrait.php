@@ -43,7 +43,7 @@ trait PrepareTierPriceTrait
 
         // try to load the entity ID for the product with the passed SKU
         if ($product = $this->loadProduct($sku = $this->getValue(ColumnKeys::SKU))) {
-            $this->setLastEntityId($entityId = $product[MemberNames::ENTITY_ID]);
+            $this->setLastPk($pk = $product[$this->getPrimaryKeyMemberName()]);
         } else {
             // prepare a log message
             $message = sprintf('Product with SKU "%s" can\'t be loaded to create URL rewrites', $sku);
@@ -80,18 +80,18 @@ trait PrepareTierPriceTrait
 
             // initialize the (percentage) value
             $value = $this->getValueTypes()->isFixed($valueType) ? (integer) $price : 0.00;
-            $percentageValue = $this->getValueTypes()->isDiscount($valueType) ? (integer) $price : 0.00;
+            $percentageValue = $this->getValueTypes()->isDiscount($valueType) ? (integer) $price : null;
 
             // initialize the tier price with the given values
             return $this->initializeEntity(
                 array(
-                    MemberNames::ENTITY_ID         => $entityId,
-                    MemberNames::ALL_GROUPS        => $allGroups,
-                    MemberNames::CUSTOMER_GROUP_ID => $customerGroupId,
-                    MemberNames::QTY               => $qty,
-                    MemberNames::VALUE             => $value,
-                    MemberNames::WEBSITE_ID        => $websiteId,
-                    MemberNames::PERCENTAGE_VALUE  => $percentageValue
+                    $this->getPrimaryKeyMemberName() => $pk,
+                    MemberNames::ALL_GROUPS          => $allGroups,
+                    MemberNames::CUSTOMER_GROUP_ID   => $customerGroupId,
+                    MemberNames::QTY                 => $qty,
+                    MemberNames::VALUE               => $value,
+                    MemberNames::WEBSITE_ID          => $websiteId,
+                    MemberNames::PERCENTAGE_VALUE    => $percentageValue
                 )
             );
         }
@@ -125,13 +125,6 @@ trait PrepareTierPriceTrait
      * @return mixed|null The, almost formatted, value
      */
     abstract public function getValue($name, $default = null, callable $callback = null);
-
-    /**
-     * Return's the ID of the product that has been created recently.
-     *
-     * @return string The entity Id
-     */
-    abstract protected function getLastEntityId();
 
     /**
      * Append's the exception suffix containing filename and line number to the
@@ -191,11 +184,19 @@ trait PrepareTierPriceTrait
     abstract protected function isAllGroups($code);
 
     /**
-     * Set's the ID of the product that has been created recently.
+     * Set's the ID of the last PK used.
      *
-     * @param string $lastEntityId The entity ID
+     * @param string $pk The PK
      *
      * @return void
      */
-    abstract protected function setLastEntityId($lastEntityId);
+    abstract protected function setLastPk($pk);
+
+    /**
+     * Returns the primary key member name for the actual Magento edition.
+     *
+     * @return string The primary key member name
+     * @see \TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface::getPrimaryKeyMemberName()
+     */
+    abstract protected function getPrimaryKeyMemberName();
 }

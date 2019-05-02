@@ -39,6 +39,21 @@ interface TierPriceProcessorInterface extends ProductProcessorInterface
 {
 
     /**
+     * Returns the primary key util instance.
+     *
+     * @return \TechDivision\Import\Utils\PrimaryKeyUtilInterface The primary key util instance
+     */
+    public function getPrimaryKeyUtil();
+
+    /**
+     * Returns the primary key member name for the actual Magento edition.
+     *
+     * @return string The primary key member name
+     * @see \TechDivision\Import\Utils\PrimaryKeyUtilInterface::getPrimaryKeyMemberName()
+     */
+    public function getPrimaryKeyMemberName();
+
+    /**
      * Returns the action with the tier price CRUD methods.
      *
      * @return \TechDivision\Import\Actions\ActionInterface The action instance
@@ -62,7 +77,7 @@ interface TierPriceProcessorInterface extends ProductProcessorInterface
     /**
      * Returns the tier price with the given parameters.
      *
-     * @param string  $entityId        The entity ID of the product relation
+     * @param string  $pk              The PK of the product relation
      * @param integer $allGroups       The flag if all groups are affected or not
      * @param integer $customerGroupId The customer group ID
      * @param integer $qty             The tier price quantity
@@ -70,7 +85,7 @@ interface TierPriceProcessorInterface extends ProductProcessorInterface
      *
      * @return array The tier price
      */
-    public function loadTierPriceByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($entityId, $allGroups, $customerGroupId, $qty, $websiteId);
+    public function loadTierPriceByPkAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($pk, $allGroups, $customerGroupId, $qty, $websiteId);
 
     /**
      * Persists the tier price with the passed data.
