@@ -22,10 +22,8 @@
 
 namespace TechDivision\Import\Product\TierPrice\Observers;
 
-use TechDivision\Import\Product\Observers\AbstractProductImportObserver;
 use TechDivision\Import\Product\TierPrice\Utils\ValueTypesInterface;
 use TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface;
-use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
 
 /**
  * Observer for creating/updating/deleting tier prices from the database.
@@ -38,7 +36,7 @@ use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
  * @link      https://www.techdivision.com
  * @link      https://www.refusion.com
  */
-class TierPriceObserver extends AbstractProductImportObserver
+class TierPriceObserver extends AbstractProductTierPriceObserver
 {
 
     /**
@@ -47,13 +45,6 @@ class TierPriceObserver extends AbstractProductImportObserver
      * @var \TechDivision\Import\Product\TierPrice\Observers\PrepareTierPriceTrait
      */
     use PrepareTierPriceTrait;
-
-    /**
-     * The product tier price processor instance.
-     *
-     * @var \TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface
-     */
-    protected $tierPriceProcessor;
 
     /**
      * The available tier price value types.
@@ -70,18 +61,12 @@ class TierPriceObserver extends AbstractProductImportObserver
      */
     public function __construct(TierPriceProcessorInterface $tierPriceProcessor, ValueTypesInterface $valueTypes)
     {
-        $this->tierPriceProcessor = $tierPriceProcessor;
-        $this->valueTypes = $valueTypes;
-    }
 
-    /**
-     * Returns the product URL rewrite processor instance.
-     *
-     * @return \TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface The processor instance
-     */
-    protected function getTierPriceProcessor()
-    {
-        return $this->tierPriceProcessor;
+        // pass the tier price processor through to the parent instance
+        parent::__construct($tierPriceProcessor);
+
+        // set the value types
+        $this->valueTypes = $valueTypes;
     }
 
     /**
@@ -109,7 +94,7 @@ class TierPriceObserver extends AbstractProductImportObserver
         // persist the tier price and mark it as processed
         $this->addProcessedTierPrice(
             $this->persistTierPrice($tierPrice),
-            $tierPrice[MemberNames::ENTITY_ID]
+            $tierPrice[$this->getPrimaryKeyMemberName()]
         );
     }
 
@@ -211,17 +196,5 @@ class TierPriceObserver extends AbstractProductImportObserver
     protected function isAllGroups($code)
     {
         return $this->getSubject()->isAllGroups($code);
-    }
-
-    /**
-     * Set's the ID of the product that has been created recently.
-     *
-     * @param string $lastEntityId The entity ID
-     *
-     * @return void
-     */
-    protected function setLastEntityId($lastEntityId)
-    {
-        $this->getSubject()->setLastEntityId($lastEntityId);
     }
 }

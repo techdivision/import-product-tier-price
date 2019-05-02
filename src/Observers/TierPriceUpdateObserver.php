@@ -50,14 +50,14 @@ class TierPriceUpdateObserver extends TierPriceObserver
     {
 
         // load the unique key parameters
+        $pk = $attr[$this->getPrimaryKeyMemberName()];
         $qty = $attr[MemberNames::QTY];
-        $entityId = $attr[MemberNames::ENTITY_ID];
         $allGroups = $attr[MemberNames::ALL_GROUPS];
         $websiteId = $attr[MemberNames::WEBSITE_ID];
         $customerGroupId = $attr[MemberNames::CUSTOMER_GROUP_ID];
 
         // try load the product by the given SKU
-        if ($entity = $this->loadTierPriceByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($entityId, $allGroups, $customerGroupId, $qty, $websiteId)) {
+        if ($entity = $this->loadTierPriceByPkAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($pk, $allGroups, $customerGroupId, $qty, $websiteId)) {
             return $this->mergeEntity($entity, $attr);
         }
 
@@ -68,7 +68,7 @@ class TierPriceUpdateObserver extends TierPriceObserver
     /**
      * Returns the tier price with the given parameters.
      *
-     * @param string  $entityId        The entity ID of the product relation
+     * @param string  $pk              The PK of the product relation
      * @param integer $allGroups       The flag if all groups are affected or not
      * @param integer $customerGroupId The customer group ID
      * @param integer $qty             The tier price quantity
@@ -76,8 +76,8 @@ class TierPriceUpdateObserver extends TierPriceObserver
      *
      * @return array The tier price
      */
-    protected function loadTierPriceByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($entityId, $allGroups, $customerGroupId, $qty, $websiteId)
+    protected function loadTierPriceByPkAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($pk, $allGroups, $customerGroupId, $qty, $websiteId)
     {
-        return $this->getTierPriceProcessor()->loadTierPriceByEntityIdAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($entityId, $allGroups, $customerGroupId, $qty, $websiteId);
+        return $this->getTierPriceProcessor()->loadTierPriceByPkAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($pk, $allGroups, $customerGroupId, $qty, $websiteId);
     }
 }
