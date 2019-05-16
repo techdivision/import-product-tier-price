@@ -1,3 +1,13 @@
+# Version 3.0.0
+
+## Bugfixes
+
+* Fixed techdivision/import-product-tier-price#6
+
+## Features
+
+* Switch to techdivision/import-product 10.0.* version as dependency
+
 # Version 2.0.0
 
 ## Bugfixes

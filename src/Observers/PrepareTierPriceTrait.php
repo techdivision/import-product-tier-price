@@ -79,7 +79,7 @@ trait PrepareTierPriceTrait
             $allGroups = (integer) $this->isAllGroups($customerGroupCode);
 
             // initialize the (percentage) value
-            $value = $this->getValueTypes()->isFixed($valueType) ? (integer) $price : 0.00;
+            $value = $this->getValueTypes()->isFixed($valueType) ? (double) $price : 0.00;
             $percentageValue = $this->getValueTypes()->isDiscount($valueType) ? (integer) $price : null;
 
             // initialize the tier price with the given values
