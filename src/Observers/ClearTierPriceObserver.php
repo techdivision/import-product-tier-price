@@ -83,19 +83,29 @@ class ClearTierPriceObserver extends AbstractProductTierPriceObserver
     protected function process()
     {
 
-        // prepare the tier price attributes of the actual row
-        $tierPrice = $this->prepareAttributes();
+        try {
+            // prepare the tier price attributes of the actual row
+            $tierPrice = $this->prepareAttributes();
 
-        // load the values for loading the actual tier price
-        $pk = $tierPrice[$this->getPrimaryKeyMemberName()];
-        $qty = $tierPrice[MemberNames::QTY];
-        $allGroups = $tierPrice[MemberNames::ALL_GROUPS];
-        $websiteId = $tierPrice[MemberNames::WEBSITE_ID];
-        $customerGroupId = $tierPrice[MemberNames::CUSTOMER_GROUP_ID];
+            // load the values for loading the actual tier price
+            $pk = $tierPrice[$this->getPrimaryKeyMemberName()];
+            $qty = $tierPrice[MemberNames::QTY];
+            $allGroups = $tierPrice[MemberNames::ALL_GROUPS];
+            $websiteId = $tierPrice[MemberNames::WEBSITE_ID];
+            $customerGroupId = $tierPrice[MemberNames::CUSTOMER_GROUP_ID];
 
-        // delete the tier price if available
-        if ($tierPrice = $this->loadTierPriceByPkAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($pk, $allGroups, $customerGroupId, $qty, $websiteId)) {
-            $this->deleteTierPrice(array(MemberNames::VALUE_ID => $tierPrice[MemberNames::VALUE_ID]));
+            // delete the tier price if available
+            if ($tierPrice = $this->loadTierPriceByPkAndAllGroupsAndCustomerGroupIdAndQtyAndWebsiteId($pk, $allGroups, $customerGroupId, $qty, $websiteId)) {
+                $this->deleteTierPrice(array(MemberNames::VALUE_ID => $tierPrice[MemberNames::VALUE_ID]));
+            }
+        } catch (\Exception $e) {
+            // query whether or not we're in debug mode
+            if ($this->getSubject()->isDebugMode()) {
+                $this->getSubject()->getSystemLogger()->warning($e->getMessage());
+                $this->skipRow();
+            }
+            // throw the exception agatin
+            throw $e;
         }
     }
 

@@ -37,6 +37,7 @@ trait PrepareTierPriceTrait
      * Prepare the attributes of the entity that has to be persisted.
      *
      * @return array The prepared attributes
+     * @throws \Exception Is thrown, if the product with the given SKU can not be loaded
      */
     protected function prepareAttributes()
     {
@@ -45,15 +46,11 @@ trait PrepareTierPriceTrait
         if ($product = $this->loadProduct($sku = $this->getValue(ColumnKeys::SKU))) {
             $this->setLastPk($pk = $product[$this->getPrimaryKeyMemberName()]);
         } else {
-            // prepare a log message
-            $message = sprintf('Product with SKU "%s" can\'t be loaded to create URL rewrites', $sku);
-            // query whether or not we're in debug mode
-            if ($this->getSubject()->isDebugMode()) {
-                $this->getSubject()->getSystemLogger()->warning($message);
-                return $this->getRow();
-            } else {
-                throw new \Exception($message);
-            }
+            throw new \Exception(
+                $this->appendExceptionSuffix(
+                    sprintf('Product with SKU "%s" can\'t be loaded to create tier price for', $sku)
+                )
+            );
         }
 
         // load tier price quantity and pricde

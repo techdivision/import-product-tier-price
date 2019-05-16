@@ -88,14 +88,25 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
     protected function process()
     {
 
-        // intialize the tier price data
-        $tierPrice = $this->initializeTierPrice($this->prepareAttributes());
+        try {
+            // intialize the tier price data
+            $tierPrice = $this->initializeTierPrice($this->prepareAttributes());
 
-        // persist the tier price and mark it as processed
-        $this->addProcessedTierPrice(
-            $this->persistTierPrice($tierPrice),
-            $tierPrice[$this->getPrimaryKeyMemberName()]
-        );
+            // persist the tier price and mark it as processed
+            $this->addProcessedTierPrice(
+                $this->persistTierPrice($tierPrice),
+                $tierPrice[$this->getPrimaryKeyMemberName()]
+            );
+        } catch (\Exception $e) {
+            // query whether or not we're in debug mode
+            if ($this->getSubject()->isDebugMode()) {
+                $this->getSubject()->getSystemLogger()->warning($e->getMessage());
+                $this->skipRow();
+                return;
+            }
+            // throw the exception agatin
+            throw $e;
+        }
     }
 
     /**s
