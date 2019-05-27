@@ -333,25 +333,26 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     /**
      * Clean-Up the tier prices after an add-update operation.
      *
-     * @param array $processedTierPrices The array with the IDs of the processed tier prices
+     * @param array $processedTierPrices The array with tier prices processed in the actual import
+     * @param array $pkToSkuMapping      The array with PK => SKU mapping of products processed in the actual import
      *
      * @return void
      */
-    public function cleanUpTierPrices(array $processedTierPrices)
+    public function cleanUpTierPrices(array $processedTierPrices, array $pkToSkuMapping)
     {
 
-        // load the available + the processed tier prices
+        // load ALL available tier prices
         $availableTierPrices = $this->loadTierPrices();
 
         // iterate over the tier prices and delete the obsolete ones
         foreach ($availableTierPrices as $tierPrice) {
-            // if imported, we continue
+            // if the tier price has been processed, continue
             if (isset($processedTierPrices[$tierPrice[MemberNames::VALUE_ID]])) {
-                // if the product has been touched by the import, delete the tier price
-                if (in_array($tierPrice[$this->getPrimaryKeyMemberName()], $processedTierPrices[$tierPrice[MemberNames::VALUE_ID]])) {
-                    continue;
-                }
+                continue;
+            }
 
+            // if the product has been processed, delete the tier price
+            if (isset($pkToSkuMapping[$tierPrice[$this->getPrimaryKeyMemberName()]])) {
                 // delete the tier price, because the entity is part of the import but the tier price is NOT available any more
                 $this->deleteTierPrice([MemberNames::VALUE_ID => $tierPrice[MemberNames::VALUE_ID]]);
             }
