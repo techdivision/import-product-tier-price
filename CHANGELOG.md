@@ -3,6 +3,7 @@
 ## Bugfixes
 
 * Fixed techdivision/import-product-tier-price#6
+* Fixed techdivision/import-product-tier-price#7
 
 ## Features
 

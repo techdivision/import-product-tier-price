@@ -24,6 +24,7 @@ namespace TechDivision\Import\Product\TierPrice\Observers;
 
 use TechDivision\Import\Product\TierPrice\Utils\ValueTypesInterface;
 use TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface;
+use TechDivision\Import\Product\TierPrice\Utils\ColumnKeys;
 
 /**
  * Observer for creating/updating/deleting tier prices from the database.
@@ -93,10 +94,8 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
             $tierPrice = $this->initializeTierPrice($this->prepareAttributes());
 
             // persist the tier price and mark it as processed
-            $this->addProcessedTierPrice(
-                $this->persistTierPrice($tierPrice),
-                $tierPrice[$this->getPrimaryKeyMemberName()]
-            );
+            $this->addProcessedTierPrice($this->persistTierPrice($tierPrice), $pk = $tierPrice[$this->getPrimaryKeyMemberName()]);
+            $this->addSkuToPkMapping($this->getValue(ColumnKeys::SKU), $pk);
         } catch (\Exception $e) {
             // query whether or not we're in debug mode
             if ($this->getSubject()->isDebugMode()) {

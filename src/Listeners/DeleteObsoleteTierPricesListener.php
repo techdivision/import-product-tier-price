@@ -22,10 +22,12 @@
 
 namespace TechDivision\Import\Product\TierPrice\Listeners;
 
-use TechDivision\Import\Subjects\SubjectInterface;
 use TechDivision\Import\Product\TierPrice\Utils\ConfigurationKeys;
 use TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface;
-
+use TechDivision\Import\Plugins\PluginInterface;
+use TechDivision\Import\Services\RegistryProcessorInterface;
+use TechDivision\Import\Product\Utils\SkuToPkMappingUtilInterface;
+use TechDivision\Import\Product\TierPrice\Utils\RegistryKeys;
 /**
  * After the subject has finished it's processing, this listener causes the obsolete tier prices to be deleted.
  *
@@ -48,13 +50,34 @@ class DeleteObsoleteTierPricesListener extends \League\Event\AbstractListener
     protected $tierPriceProcessor;
 
     /**
+     * The registry processor instance.
+     *
+     * @var \TechDivision\Import\Services\RegistryProcessorInterface
+     */
+    protected $registryProcessor;
+
+    /**
+     * The invoking tier price processor instance.
+     *
+     * @var \TechDivision\Import\Product\Utils\SkuToPkMappingUtilInterface
+     */
+    protected $skuToPkMappingUtil;
+
+    /**
      * Initializes the listener with the tier price processor.
      *
      * @param \TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface $tierPriceProcessor The observer instance
+     * @param \TechDivision\Import\Services\RegistryProcessorInterface                    $registryProcessor  The registry processor instance
+     * @param \TechDivision\Import\Product\Utils\SkuToPkMappingUtilInterface              $skuToPkMappingUtil The observer instance
      */
-    public function __construct(TierPriceProcessorInterface $tierPriceProcessor)
-    {
+    public function __construct(
+        TierPriceProcessorInterface $tierPriceProcessor,
+        RegistryProcessorInterface $registryProcessor,
+        SkuToPkMappingUtilInterface $skuToPkMappingUtil
+    ) {
         $this->tierPriceProcessor = $tierPriceProcessor;
+        $this->registryProcessor = $registryProcessor;
+        $this->skuToPkMappingUtil = $skuToPkMappingUtil;
     }
 
     /**
@@ -68,24 +91,70 @@ class DeleteObsoleteTierPricesListener extends \League\Event\AbstractListener
     }
 
     /**
+     * Returns the registry processor instance.
+     *
+     * @return \TechDivision\Import\Services\RegistryProcessorInterface
+     */
+    protected function getRegistryProcessor()
+    {
+        return $this->registryProcessor;
+    }
+
+    /**
+     * Returns the tier price processor instance.
+     *
+     * @return \TechDivision\Import\Product\Utils\SkuToPkMappingUtilInterface The processor instance
+     */
+    protected function getSkuToPkMappingUtil()
+    {
+        return $this->skuToPkMappingUtil;
+    }
+
+    /**
+     * Returns the processed tier prices of the actual import process.
+     *
+     * @param string $serial The serial of the actual import
+     *
+     * @return array The array with the IDs of the processed tier prices
+     */
+    protected function getProcessedTierPrices($serial)
+    {
+
+        // load the status for the actual import process
+        $status = $this->getRegistryProcessor()->getAttribute($serial);
+
+        // query whether or not an array with the IDs of the processed tier prices exists
+        if (isset($status[RegistryKeys::PROCESSED_TIER_PRICES])) {
+            return $status[RegistryKeys::PROCESSED_TIER_PRICES];
+        }
+
+        // if not, return an empty array
+        return array();
+    }
+
+    /**
      * Handle the event.
      *
      * Deletes the tier prices for all the products, which have been touched by the import,
      * and which were not part of the tier price import.
      *
-     * @param \League\Event\EventInterface                   $event   The event that triggered the listener
-     * @param \TechDivision\Import\Subjects\SubjectInterface $subject The subject that triggered the listener
+     * @param \League\Event\EventInterface                 $event  The event that triggered the listener
+     * @param \TechDivision\Import\Plugins\PluginInterface $plugin The plugin that triggered the listener
      *
      * @return void
      */
-    public function handle(\League\Event\EventInterface $event, SubjectInterface $subject = null)
+    public function handle(\League\Event\EventInterface $event, PluginInterface $plugin = null)
     {
 
         // query whether or not the tier prices has to be cleaned-up
         /** @var \TechDivision\Import\Product\TierPrice\Subjects\TierPriceSubject $subject */
-        if ($subject->getConfiguration()->hasParam(ConfigurationKeys::CLEAN_UP_TIER_PRICES)) {
-            if ($subject->getConfiguration()->getParam(ConfigurationKeys::CLEAN_UP_TIER_PRICES)) {
-                $this->getTierPriceProcessor()->cleanUpTierPrices($subject->getProcessedTierPrices());
+        if ($plugin->getPluginConfiguration()->hasParam(ConfigurationKeys::CLEAN_UP_TIER_PRICES)) {
+            if ($plugin->getPluginConfiguration()->getParam(ConfigurationKeys::CLEAN_UP_TIER_PRICES)) {
+                $this->getTierPriceProcessor()
+                     ->cleanUpTierPrices(
+                         $this->getProcessedTierPrices($plugin->getSerial()),
+                         $this->getSkuToPkMappingUtil()->getInvertedSkuToPkMapping($this->getRegistryProcessor(), $plugin->getSerial())
+                     );
             }
         }
     }

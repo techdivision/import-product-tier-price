@@ -110,9 +110,10 @@ interface TierPriceProcessorInterface extends ProductProcessorInterface
     /**
      * Clean-Up the tier prices after an add-update operation.
      *
-     * @param array $processedTierPrices The array with the IDs of the processed tier prices
+     * @param array $processedTierPrices The array with tier prices processed in the actual import
+     * @param array $pkToSkuMapping      The array with SKU => PK mapping of products processed in the actual import
      *
      * @return void
      */
-    public function cleanUpTierPrices(array $processedTierPrices);
+    public function cleanUpTierPrices(array $processedTierPrices, array $pkToSkuMapping);
 }
