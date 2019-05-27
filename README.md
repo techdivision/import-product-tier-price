@@ -6,6 +6,6 @@
  [![Build Status](https://img.shields.io/travis/techdivision/import-product-tier-price/master.svg?style=flat-square)](http://travis-ci.org/techdivision/import-product-tier-price)
  [![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/techdivision/import-product-tier-price/master.svg?style=flat-square)](https://scrutinizer-ci.com/g/techdivision/import-product-tier-price/?branch=master) [![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/techdivision/import-product-tier-price/master.svg?style=flat-square)](https://scrutinizer-ci.com/g/techdivision/import-product-tier-price/?branch=master)
 
- > This is a well appreciated contribution of [Klaas-Tido R&uuml;hl](https://github.com/ktruehl) working for [REFUSTION GmbH](https://www.refusion.com), thanks again for that!
+ > This is a well appreciated contribution of [Klaas-Tido R&uuml;hl](https://github.com/ktruehl) working for [REFUSION GmbH](https://www.refusion.com), thanks again for that!
  
 Please visit the M2IF website for documentation and additional information
