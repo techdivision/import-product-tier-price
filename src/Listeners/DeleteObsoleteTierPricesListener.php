@@ -22,12 +22,13 @@
 
 namespace TechDivision\Import\Product\TierPrice\Listeners;
 
-use TechDivision\Import\Product\TierPrice\Utils\ConfigurationKeys;
-use TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface;
 use TechDivision\Import\Plugins\PluginInterface;
 use TechDivision\Import\Services\RegistryProcessorInterface;
-use TechDivision\Import\Product\Utils\SkuToPkMappingUtilInterface;
 use TechDivision\Import\Product\TierPrice\Utils\RegistryKeys;
+use TechDivision\Import\Product\Utils\SkuToPkMappingUtilInterface;
+use TechDivision\Import\Product\TierPrice\Utils\ConfigurationKeys;
+use TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface;
+
 /**
  * After the subject has finished it's processing, this listener causes the obsolete tier prices to be deleted.
  *
