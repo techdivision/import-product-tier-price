@@ -95,7 +95,7 @@ class TierPriceSubject extends AbstractProductSubject
         parent::setUp($serial);
 
         // load the status of the actual import process
-        $status = $this->getRegistryProcessor()->getAttribute($serial);
+        $status = $this->getRegistryProcessor()->getAttribute(RegistryKeys::STATUS);
 
         // load the available customer groups from the registry
         $this->customerGroups = $status[RegistryKeys::GLOBAL_DATA][RegistryKeys::CUSTOMER_GROUPS];
@@ -135,7 +135,7 @@ class TierPriceSubject extends AbstractProductSubject
 
         // update the status
         $registryProcessor->mergeAttributesRecursive(
-            $serial,
+            RegistryKeys::STATUS,
             array(
                 RegistryKeys::PROCESSED_TIER_PRICES => $this->processedTierPrices
             )

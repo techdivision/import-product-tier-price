@@ -122,7 +122,7 @@ class DeleteObsoleteTierPricesListener extends \League\Event\AbstractListener
     {
 
         // load the status for the actual import process
-        $status = $this->getRegistryProcessor()->getAttribute($serial);
+        $status = $this->getRegistryProcessor()->getAttribute(RegistryKeys::STATUS);
 
         // query whether or not an array with the IDs of the processed tier prices exists
         if (isset($status[RegistryKeys::PROCESSED_TIER_PRICES])) {
