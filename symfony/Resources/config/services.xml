@@ -28,7 +28,7 @@
         <service id="import_product_tier_price.utils.value.types" class="TechDivision\Import\Product\TierPrice\Utils\ValueTypes"/>
 
         <service id="import_product_tier_price.repository.sql.statement" class="TechDivision\Import\Product\TierPrice\Repositories\SqlStatementRepository">
-            <argument type="service" id="import.util.primary.key"/>
+            <argument type="service" id="import.util.sql.compilers"/>
         </service>
         <service id="import_product_tier_price.repository.tier_price" class="TechDivision\Import\Product\TierPrice\Repositories\TierPriceRepository">
             <argument type="service" id="connection"/>
