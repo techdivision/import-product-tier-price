@@ -60,7 +60,6 @@
           "subjects" : [
             {
               "id": "import.subject.move.files",
-              "identifier": "move-files",
               "file-resolver": {
                 "prefix": "product-import-tier-price"
               },
@@ -68,7 +67,6 @@
             },
             {
               "id": "import_product_tier_price.subject.tier_price",
-              "identifier": "files",
               "file-resolver": {
                 "prefix": "product-import-tier-price"
               },
@@ -101,7 +99,6 @@
           "subjects": [
             {
               "id": "import.subject.move.files",
-              "identifier": "move-files",
               "file-resolver": {
                 "prefix": "product-import-tier-price"
               },
@@ -109,7 +106,6 @@
             },
             {
               "id": "import_product_tier_price.subject.tier_price",
-              "identifier": "files",
               "file-resolver": {
                 "prefix": "product-import-tier-price"
               },
@@ -155,7 +151,6 @@
           "subjects": [
             {
               "id": "import.subject.move.files",
-              "identifier": "move-files",
               "file-resolver": {
                 "prefix": "product-import-tier-price"
               },
@@ -163,7 +158,6 @@
             },
             {
               "id": "import_product_tier_price.subject.tier_price",
-              "identifier": "files",
               "listeners": [
                  {
                   "subject.import.success" : [

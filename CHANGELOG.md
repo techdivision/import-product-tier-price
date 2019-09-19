@@ -7,6 +7,7 @@
 ## Features
 
 * Add techdivision/import-cli-simple#216
+* Remove unnecessary identifiers from configuration
 * Switch to latest techdivision/import-product 19.* version as dependency
 
 # Version 10.0.0
