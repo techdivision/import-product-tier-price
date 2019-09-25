@@ -50,6 +50,23 @@
   ],
   "operations" : [
     {
+      "name" : "move-files",
+      "plugins" : [
+        {
+          "id": "import.plugin.subject",
+          "subjects" : [
+            {
+              "id": "import.subject.move.files",
+              "file-resolver": {
+                "id": "import.subject.file.resolver.move.files"
+              },
+              "ok-file-needed": true
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name" : "delete",
       "plugins" : [
         {
@@ -58,13 +75,6 @@
         {
           "id": "import.plugin.subject",
           "subjects" : [
-            {
-              "id": "import.subject.move.files",
-              "file-resolver": {
-                "prefix": "product-import-tier-price"
-              },
-              "ok-file-needed": true
-            },
             {
               "id": "import_product_tier_price.subject.tier_price",
               "file-resolver": {
@@ -97,13 +107,6 @@
         {
           "id": "import.plugin.subject",
           "subjects": [
-            {
-              "id": "import.subject.move.files",
-              "file-resolver": {
-                "prefix": "product-import-tier-price"
-              },
-              "ok-file-needed": true
-            },
             {
               "id": "import_product_tier_price.subject.tier_price",
               "file-resolver": {
@@ -149,13 +152,6 @@
             }
           ],
           "subjects": [
-            {
-              "id": "import.subject.move.files",
-              "file-resolver": {
-                "prefix": "product-import-tier-price"
-              },
-              "ok-file-needed": true
-            },
             {
               "id": "import_product_tier_price.subject.tier_price",
               "listeners": [
