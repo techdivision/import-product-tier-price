@@ -1,34 +1,10 @@
 {
-  "shortcuts": {
-    "general": {
-      "catalog_product_tier_price": {
-        "delete": [
-          "general/general/global-data",
-          "general/general/move-files",
-          "general/catalog_product_tier_price/delete"
-        ],
-        "replace": [
-          "general/general/global-data",
-          "general/general/move-files",
-          "general/general/cache-warmer",
-          "general/catalog_product_tier_price/replace"
-        ],
-        "add-update": [
-          "general/general/global-data",
-          "general/general/move-files",
-          "general/general/cache-warmer",
-          "general/catalog_product_tier_price/add-update"
-        ]
-      }
-    }
-  },
   "operations": {
     "general": {
-      "catalog_product_tier_price": [
-        {
-          "name": "delete",
-          "plugins": [
-            {
+      "catalog_product_tier_price": {
+        "delete": {
+          "plugins": {
+            "subject": {
               "id": "import.plugin.subject",
               "subjects": [
                 {
@@ -46,12 +22,11 @@
                 }
               ]
             }
-          ]
+          }
         },
-        {
-          "name": "replace",
-          "plugins": [
-            {
+        "replace": {
+          "plugins": {
+            "subject": {
               "id": "import.plugin.subject",
               "subjects": [
                 {
@@ -70,12 +45,11 @@
                 }
               ]
             }
-          ]
+          }
         },
-        {
-          "name": "add-update",
-          "plugins": [
-            {
+        "add-update": {
+          "plugins": {
+            "subject": {
               "id": "import.plugin.subject",
               "listeners": [
                 {
@@ -110,9 +84,9 @@
                 }
               ]
             }
-          ]
+          }
         }
-      ]
+      }
     }
   }
 }

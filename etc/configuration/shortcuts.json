@@ -1,0 +1,25 @@
+{
+  "shortcuts": {
+    "general": {
+      "catalog_product_tier_price": {
+        "delete": [
+          "general/general/global-data",
+          "general/general/move-files",
+          "general/catalog_product_tier_price/delete"
+        ],
+        "replace": [
+          "general/general/global-data",
+          "general/general/move-files",
+          "general/general/cache-warmer",
+          "general/catalog_product_tier_price/replace"
+        ],
+        "add-update": [
+          "general/general/global-data",
+          "general/general/move-files",
+          "general/general/cache-warmer",
+          "general/catalog_product_tier_price/add-update"
+        ]
+      }
+    }
+  }
+}
