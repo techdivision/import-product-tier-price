@@ -1,3 +1,13 @@
+# Version 12.0.0
+
+## Bugfixes
+
+* Fixed invalid method signatures
+
+## Features
+
+* None
+
 # Version 11.0.0
 
 ## Bugfixes
