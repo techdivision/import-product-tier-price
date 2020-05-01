@@ -8,4 +8,5 @@
 
  > This is a well appreciated contribution of [Klaas-Tido R&uuml;hl](https://github.com/ktruehl) working for [REFUSION GmbH](https://www.refusion.com), thanks again for that!
  
-Please visit the M2IF website for documentation and additional information
+
+Please visit the M2IF [website](https://m2if.com) for documentation and additional information
