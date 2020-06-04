@@ -1,3 +1,13 @@
+# Version 15.0.1
+
+## Bugfixes
+
+* Fixed techdivision/import-product-tier-price#11
+
+## Features
+
+* None
+
 # Version 15.0.0
 
 ## Bugfixes
