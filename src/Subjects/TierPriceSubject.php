@@ -107,14 +107,14 @@ class TierPriceSubject extends AbstractProductSubject
 
         // merge the customer group code mappings from the configuration
         if ($this->getConfiguration()->hasParam(ConfigurationKeys::CUSTOMER_GROUP_CODE_MAPPINGS)) {
-            foreach ($this->getConfiguration()->hasParam(ConfigurationKeys::CUSTOMER_GROUP_CODE_MAPPINGS) as $row => $system) {
+            foreach ($this->getConfiguration()->getParam(ConfigurationKeys::CUSTOMER_GROUP_CODE_MAPPINGS) as $row => $system) {
                 $this->customerGroupCodeMappings[$row] = $system;
             }
         }
 
         // merge the website code mappings from the configuration
         if ($this->getConfiguration()->hasParam(ConfigurationKeys::WEBSITE_CODE_MAPPINGS)) {
-            foreach ($this->getConfiguration()->hasParam(ConfigurationKeys::WEBSITE_CODE_MAPPINGS) as $row => $system) {
+            foreach ($this->getConfiguration()->getParam(ConfigurationKeys::WEBSITE_CODE_MAPPINGS) as $row => $system) {
                 $this->websiteCodeMappings[$row] = $system;
             }
         }
