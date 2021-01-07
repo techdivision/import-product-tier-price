@@ -22,7 +22,7 @@
 
 namespace TechDivision\Import\Product\TierPrice\Repositories;
 
-use TechDivision\Import\Repositories\AbstractRepository;
+use TechDivision\Import\Dbal\Repositories\AbstractRepository;
 use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
 use TechDivision\Import\Product\TierPrice\Utils\SqlStatementKeys;
 

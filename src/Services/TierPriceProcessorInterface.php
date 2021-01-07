@@ -56,7 +56,7 @@ interface TierPriceProcessorInterface extends ProductProcessorInterface
     /**
      * Returns the action with the tier price CRUD methods.
      *
-     * @return \TechDivision\Import\Actions\ActionInterface The action instance
+     * @return \TechDivision\Import\Dbal\Actions\ActionInterface The action instance
      */
     public function getTierPriceAction();
 

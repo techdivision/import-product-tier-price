@@ -33,7 +33,7 @@ namespace TechDivision\Import\Product\TierPrice\Repositories;
  * @link      https://www.techdivision.com
  * @link      https://www.refusion.com
  */
-interface CustomerGroupRepositoryInterface extends \TechDivision\Import\Repositories\RepositoryInterface
+interface CustomerGroupRepositoryInterface extends \TechDivision\Import\Dbal\Repositories\RepositoryInterface
 {
 
     /**
