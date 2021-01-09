@@ -53,7 +53,7 @@
             <argument type="service" id="import_product_tier_price.repository.sql.statement"/>
         </service>
 
-        <service id="import_product_tier_price.action.tier_price" class="TechDivision\Import\Dbal\Actions\GenericIdentifierAction">
+        <service id="import_product_tier_price.action.tier_price" class="TechDivision\Import\Dbal\Collection\Actions\GenericIdentifierAction">
             <argument type="service" id="import_product_tier_price.action.processor.tier_price.product.create"/>
             <argument type="service" id="import_product_tier_price.action.processor.tier_price.product.update"/>
             <argument type="service" id="import_product_tier_price.action.processor.tier_price.product.delete"/>

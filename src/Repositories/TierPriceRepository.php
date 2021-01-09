@@ -26,7 +26,7 @@ use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
 use TechDivision\Import\Product\TierPrice\Utils\SqlStatementKeys;
 use TechDivision\Import\Dbal\Utils\PrimaryKeyUtilInterface;
 use TechDivision\Import\Dbal\Connection\ConnectionInterface;
-use TechDivision\Import\Dbal\Repositories\AbstractRepository;
+use TechDivision\Import\Dbal\Collection\Repositories\AbstractRepository;
 use TechDivision\Import\Dbal\Repositories\SqlStatementRepositoryInterface;
 
 /**
