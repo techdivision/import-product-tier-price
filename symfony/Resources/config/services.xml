@@ -49,6 +49,7 @@
             <argument type="service" id="import.util.sql.sanitizers"/>
             <argument type="collection">
                 <argument type="constant">TechDivision\Import\Product\TierPrice\Utils\SqlStatementKeys::CREATE_TIER_PRICE</argument>
+            </argument>
         </service>
         <service id="import_product_tier_price.action.processor.tier_price.product.update" class="TechDivision\Import\Dbal\Collection\Actions\Processors\GenericIdentifierProcessor">
             <argument type="service" id="connection"/>
@@ -56,6 +57,7 @@
             <argument type="service" id="import.util.sql.sanitizers"/>
             <argument type="collection">
                 <argument type="constant">TechDivision\Import\Product\TierPrice\Utils\SqlStatementKeys::UPDATE_TIER_PRICE</argument>
+            </argument>
         </service>
         <service id="import_product_tier_price.action.processor.tier_price.product.delete" class="TechDivision\Import\Dbal\Collection\Actions\Processors\GenericProcessor">
             <argument type="service" id="connection"/>
@@ -63,6 +65,7 @@
             <argument type="service" id="import.util.sql.sanitizers"/>
             <argument type="collection">
                 <argument type="constant">TechDivision\Import\Product\TierPrice\Utils\SqlStatementKeys::DELETE_TIER_PRICE</argument>
+            </argument>
         </service>
 
         <service id="import_product_tier_price.action.tier_price" class="TechDivision\Import\Dbal\Collection\Actions\GenericIdentifierAction">
