@@ -22,12 +22,12 @@
 
 namespace TechDivision\Import\Product\TierPrice\Repositories;
 
-use TechDivision\Import\Utils\PrimaryKeyUtilInterface;
-use TechDivision\Import\Connection\ConnectionInterface;
-use TechDivision\Import\Repositories\AbstractRepository;
 use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
 use TechDivision\Import\Product\TierPrice\Utils\SqlStatementKeys;
-use TechDivision\Import\Repositories\SqlStatementRepositoryInterface;
+use TechDivision\Import\Dbal\Utils\PrimaryKeyUtilInterface;
+use TechDivision\Import\Dbal\Connection\ConnectionInterface;
+use TechDivision\Import\Dbal\Collection\Repositories\AbstractRepository;
+use TechDivision\Import\Dbal\Repositories\SqlStatementRepositoryInterface;
 
 /**
  * Default implementation of repository for accessing tier price data.
@@ -67,9 +67,9 @@ class TierPriceRepository extends AbstractRepository implements TierPriceReposit
     /**
      * Initialize the repository with the passed connection and utility class name.
      * .
-     * @param \TechDivision\Import\Connection\ConnectionInterface               $connection             The connection instance
-     * @param \TechDivision\Import\Repositories\SqlStatementRepositoryInterface $sqlStatementRepository The SQL repository instance
-     * @param \TechDivision\Import\Utils\PrimaryKeyUtilInterface                $primaryKeyUtil         The primary key util instance
+     * @param \TechDivision\Import\Dbal\Connection\ConnectionInterface               $connection             The connection instance
+     * @param \TechDivision\Import\Dbal\Repositories\SqlStatementRepositoryInterface $sqlStatementRepository The SQL repository instance
+     * @param \TechDivision\Import\Dbal\Utils\PrimaryKeyUtilInterface                $primaryKeyUtil         The primary key util instance
      */
     public function __construct(
         ConnectionInterface $connection,
@@ -87,7 +87,7 @@ class TierPriceRepository extends AbstractRepository implements TierPriceReposit
     /**
      * Returns the primary key util instance.
      *
-     * @return \TechDivision\Import\Utils\PrimaryKeyUtilInterface The primary key util instance
+     * @return \TechDivision\Import\Dbal\Utils\PrimaryKeyUtilInterface The primary key util instance
      */
     public function getPrimaryKeyUtil()
     {
@@ -98,7 +98,7 @@ class TierPriceRepository extends AbstractRepository implements TierPriceReposit
      * Returns the primary key member name for the actual Magento edition.
      *
      * @return string The primary key member name
-     * @see \TechDivision\Import\Utils\PrimaryKeyUtilInterface::getPrimaryKeyMemberName()
+     * @see \TechDivision\Import\Dbal\Utils\PrimaryKeyUtilInterface::getPrimaryKeyMemberName()
      */
     public function getPrimaryKeyMemberName()
     {

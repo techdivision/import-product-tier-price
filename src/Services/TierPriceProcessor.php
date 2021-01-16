@@ -22,9 +22,9 @@
 
 namespace TechDivision\Import\Product\TierPrice\Services;
 
-use TechDivision\Import\Actions\ActionInterface;
+use TechDivision\Import\Dbal\Actions\ActionInterface;
 use TechDivision\Import\Utils\PrimaryKeyUtilInterface;
-use TechDivision\Import\Connection\ConnectionInterface;
+use TechDivision\Import\Dbal\Connection\ConnectionInterface;
 use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
 use TechDivision\Import\Product\Repositories\ProductRepositoryInterface;
 use TechDivision\Import\Product\TierPrice\Repositories\TierPriceRepositoryInterface;
@@ -46,7 +46,7 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     /**
      * A \PDO connection used to load data and handle CRUD functionality.
      *
-     * @var \TechDivision\Import\Connection\ConnectionInterface
+     * @var \TechDivision\Import\Dbal\Connection\ConnectionInterface
      */
     protected $connection;
 
@@ -60,7 +60,7 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     /**
      * The action for tier price  CRUD methods.
      *
-     * @var \TechDivision\Import\Actions\ActionInterface
+     * @var \TechDivision\Import\Dbal\Actions\ActionInterface
      */
     protected $tierPriceAction;
 
@@ -81,11 +81,11 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     /**
      * Initialize the processor with the necessary assembler and repository instances.
      *
-     * @param \TechDivision\Import\Connection\ConnectionInterface                              $connection          The \PDO connnection instance
+     * @param \TechDivision\Import\Dbal\Connection\ConnectionInterface                         $connection          The \PDO connnection instance
      * @param \TechDivision\Import\Utils\PrimaryKeyUtilInterface                               $primaryKeyUtil      The primary key util
      * @param \TechDivision\Import\Product\TierPrice\Repositories\TierPriceRepositoryInterface $tierPriceRepository The repository to load the tier prices with
      * @param \TechDivision\Import\Product\Repositories\ProductRepositoryInterface             $productRepository   The repository to load the products with
-     * @param \TechDivision\Import\Actions\ActionInterface                                     $tierPriceAction     The action for tier price  CRUD methods
+     * @param \TechDivision\Import\Dbal\Actions\ActionInterface                                $tierPriceAction     The action for tier price  CRUD methods
      */
     public function __construct(
         ConnectionInterface $connection,
@@ -104,7 +104,7 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     /**
      * Set's the passed connection.
      *
-     * @param \TechDivision\Import\Connection\ConnectionInterface $connection The connection to set
+     * @param \TechDivision\Import\Dbal\Connection\ConnectionInterface $connection The connection to set
      *
      * @return void
      */
@@ -116,7 +116,7 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     /**
      * Return's the connection.
      *
-     * @return \TechDivision\Import\Connection\ConnectionInterface The connection instance
+     * @return \TechDivision\Import\Dbal\Connection\ConnectionInterface The connection instance
      */
     public function getConnection()
     {
@@ -203,7 +203,7 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     /**
      * Sets the action with the tier price CRUD methods.
      *
-     * @param \TechDivision\Import\Actions\ActionInterface $tierPriceAction The action with the tier price CRUD methods
+     * @param \TechDivision\Import\Dbal\Actions\ActionInterface $tierPriceAction The action with the tier price CRUD methods
      *
      * @return void
      */
@@ -215,7 +215,7 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     /**
      * Returns the action with the tier price CRUD methods.
      *
-     * @return \TechDivision\Import\Actions\ActionInterface The action instance
+     * @return \TechDivision\Import\Dbal\Actions\ActionInterface The action instance
      */
     public function getTierPriceAction()
     {
