@@ -27,13 +27,15 @@ use TechDivision\Import\Product\TierPrice\Utils\SqlStatementKeys;
 /**
  * Responsible for deleting tier prices.
  *
- * @author    Klaas-Tido Rühl <kr@refusion.com>
- * @author    Tim Wagner <t.wagner@techdivision.com>
- * @copyright 2019 REFUSiON GmbH <info@refusion.com>
- * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
- * @link      https://github.com/techdivision/import-product-tier-price
- * @link      https://www.techdivision.com
- * @link      https://www.refusion.com
+ * @author     Klaas-Tido Rühl <kr@refusion.com>
+ * @author     Tim Wagner <t.wagner@techdivision.com>
+ * @copyright  2021 REFUSiON GmbH <info@refusion.com>
+ * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * @link       https://github.com/techdivision/import-product-tier-price
+ * @link       https://www.techdivision.com
+ * @link       https://www.refusion.com
+ * @deprecated Since 17.0.0
+ * @see        \TechDivision\Import\Actions\Processors\GenericProcessor
  */
 class TierPriceDeleteProcessor extends \TechDivision\Import\Actions\Processors\AbstractDeleteProcessor
 {
