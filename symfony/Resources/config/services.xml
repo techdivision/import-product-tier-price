@@ -73,10 +73,12 @@
         <service id="import_product_tier_price.observer.tier_price" class="TechDivision\Import\Product\TierPrice\Observers\TierPriceObserver">
             <argument type="service" id="import_product_tier_price.processor.tier_price"/>
             <argument type="service" id="import_product_tier_price.utils.value.types"/>
+            <argument type="service" id="import_product.processor.product.bunch"/>
         </service>
         <service id="import_product_tier_price.observer.tier_price.update" class="TechDivision\Import\Product\TierPrice\Observers\TierPriceUpdateObserver">
             <argument type="service" id="import_product_tier_price.processor.tier_price"/>
             <argument type="service" id="import_product_tier_price.utils.value.types"/>
+            <argument type="service" id="import_product.processor.product.bunch"/>
         </service>
         <service id="import_product_tier_price.observer.clear.tier_price" class="TechDivision\Import\Product\TierPrice\Observers\ClearTierPriceObserver">
             <argument type="service" id="import_product_tier_price.processor.tier_price"/>

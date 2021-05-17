@@ -22,9 +22,12 @@
 
 namespace TechDivision\Import\Product\TierPrice\Observers;
 
+use TechDivision\Import\Product\Services\ProductBunchProcessorInterface;
+use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
 use TechDivision\Import\Product\TierPrice\Utils\ValueTypesInterface;
 use TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface;
 use TechDivision\Import\Product\TierPrice\Utils\ColumnKeys;
+use TechDivision\Import\Product\TierPrice\Utils\DefaultCodes;
 
 /**
  * Observer for creating/updating/deleting tier prices from the database.
@@ -46,7 +49,6 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
      * @var \TechDivision\Import\Product\TierPrice\Observers\PrepareTierPriceTrait
      */
     use PrepareTierPriceTrait;
-
     /**
      * The available tier price value types.
      *
@@ -55,19 +57,28 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
     protected $valueTypes;
 
     /**
+     * @var ProductBunchProcessorInterface
+     */
+    protected $productBunchProcessor;
+
+    /**
      * Initialize the observer with the passed product tier price processor instance.
      *
-     * @param \TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface $tierPriceProcessor The processor instance
-     * @param \TechDivision\Import\Product\TierPrice\Utils\ValueTypesInterface            $valueTypes         The tier price value types
+     * @param \TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface $tierPriceProcessor    The processor instance
+     * @param \TechDivision\Import\Product\TierPrice\Utils\ValueTypesInterface            $valueTypes            The tier price value types
+     * @param \TechDivision\Import\Product\Services\ProductBunchProcessorInterface        $productBunchProcessor The product processor instance
      */
-    public function __construct(TierPriceProcessorInterface $tierPriceProcessor, ValueTypesInterface $valueTypes)
-    {
+    public function __construct(
+        TierPriceProcessorInterface $tierPriceProcessor,
+        ValueTypesInterface $valueTypes,
+        ProductBunchProcessorInterface $productBunchProcessor
+    ) {
+        // set the value types
+        $this->valueTypes = $valueTypes;
+        $this->productBunchProcessor = $productBunchProcessor;
 
         // pass the tier price processor through to the parent instance
         parent::__construct($tierPriceProcessor);
-
-        // set the value types
-        $this->valueTypes = $valueTypes;
     }
 
     /**
@@ -81,6 +92,16 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
     }
 
     /**
+     * Return's the product bunch processor instance.
+     *
+     * @return ProductBunchProcessorInterface The product bunch processor instance
+     */
+    protected function getProductBunchProcessor()
+    {
+        return $this->productBunchProcessor;
+    }
+
+    /**
      * Process the observer's business logic.
      *
      * @return void
@@ -91,11 +112,34 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
 
         try {
             // intialize the tier price data
-            $tierPrice = $this->initializeTierPrice($this->prepareAttributes());
+            $tierPriceData = $this->initializeTierPrice($this->prepareAttributes());
+            
+            if ($tierPriceData['website_id'] === 0) {
+                $this->addProcessedTierPrice($this->persistTierPrice($tierPriceData), $pk = $tierPriceData[$this->getPrimaryKeyMemberName()]);
+                $this->addSkuToPkMapping($this->getValue(ColumnKeys::SKU), $pk);
+            } else {
+                $productWebsiteData = $this->getProductBunchProcessor()->loadProductWebsitesBySku(
+                    $this->getValue(ColumnKeys::SKU)
+                );
+                foreach ($productWebsiteData as $productWebsite) {
+                    if ($tierPriceData['website_id'] == $productWebsite['website_id']) {
+                        // persist the tier price and mark it as processed
+                        $this->addProcessedTierPrice($this->persistTierPrice($tierPriceData), $pk = $tierPriceData[$this->getPrimaryKeyMemberName()]);
 
-            // persist the tier price and mark it as processed
-            $this->addProcessedTierPrice($this->persistTierPrice($tierPrice), $pk = $tierPrice[$this->getPrimaryKeyMemberName()]);
-            $this->addSkuToPkMapping($this->getValue(ColumnKeys::SKU), $pk);
+                        $this->addSkuToPkMapping($this->getValue(ColumnKeys::SKU), $pk);
+                    } else {
+                        $this->getSubject()->getSystemLogger()->warning(
+                            sprintf(
+                                "The Product with the SKU %s has not assigned to the Website %s",
+                                $productWebsite['sku'],
+                                $tierPriceData['website_id']
+                            )
+                        );
+                        $this->skipRow();
+                        return;
+                    }
+                }
+            }
         } catch (\Exception $e) {
             // query whether or not we're in debug mode
             if ($this->getSubject()->isDebugMode()) {
@@ -107,7 +151,7 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
             throw $e;
         }
     }
-
+    
     /**s
      * Initialize the product website with the passed attributes and returns an instance.
      *
