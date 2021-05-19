@@ -134,28 +134,25 @@ class ProductTierPriceObserver extends AbstractProductImportObserver
                 $valueType = $this->getValueType($tierPriceImportData);
                 $website = $this->getWebsiteCode($tierPriceImportData);
                 $customerGroup = $this->getCustomerGroupCode($tierPriceImportData);
+                $tierpriceWebsites = $this->explode($this->getValue(ColumnKeys::PRODUCT_WEBSITES), ',');
 
-                // prepare the artefact we want to export
-                $artefacts[] = $this->newArtefact(
-                    array(
-                        ColumnKeys::SKU                       => $sku,
-                        ColumnKeys::TIER_PRICE_QTY            => $qty,
-                        ColumnKeys::TIER_PRICE                => $price,
-                        ColumnKeys::TIER_PRICE_VALUE_TYPE     => $valueType,
-                        ColumnKeys::TIER_PRICE_WEBSITE        => $website,
-                        ColumnKeys::TIER_PRICE_CUSTOMER_GROUP => $customerGroup
-                    ),
-                    array(
-                        ColumnKeys::SKU                       => ColumnKeys::SKU,
-                        ColumnKeys::TIER_PRICE_QTY            => ColumnKeys::TIER_PRICES,
-                        ColumnKeys::TIER_PRICE                => ColumnKeys::TIER_PRICES,
-                        ColumnKeys::TIER_PRICE_VALUE_TYPE     => ColumnKeys::TIER_PRICES,
-                        ColumnKeys::TIER_PRICE_WEBSITE        => ColumnKeys::TIER_PRICES,
-                        ColumnKeys::TIER_PRICE_CUSTOMER_GROUP => ColumnKeys::TIER_PRICES
-                    )
-                );
+                if ($website === DefaultCodes::ALL_WEBSITES) {
+                    // prepare the artefact we want to export
+                    $artefacts = $this->getArtefact($sku, $qty, $price, $valueType, $website, $customerGroup, $artefacts);
+                } elseif (in_array($website, $tierpriceWebsites)) {
+                    // prepare the artefact we want to export
+                    $artefacts = $this->getArtefact($sku, $qty, $price, $valueType, $website, $customerGroup, $artefacts);
+                } else {
+                    $this->getSubject()->getSystemLogger()->warning(
+                        sprintf(
+                            "The Product with the SKU %s has not assigned to the Website %s",
+                            $sku,
+                            $website
+                        )
+                    );
+                    $this->skipRow();
+                }
             }
-
             // add the artefact to the observer to be exported later
             $this->addArtefacts($artefacts);
         }
@@ -222,5 +219,46 @@ class ProductTierPriceObserver extends AbstractProductImportObserver
     protected function addArtefacts(array $artefacts)
     {
         $this->getSubject()->addArtefacts(ProductTierPriceObserver::ARTEFACT_TYPE, $artefacts);
+    }
+
+    /**
+     * @param string $sku           Sku
+     * @param string $qty           Quantity
+     * @param string $price         Price
+     * @param string $valueType     valueType
+     * @param string $website       Website
+     * @param string $customerGroup Customer Group
+     * @param array  $artefacts     Artefact
+     * @return array
+     */
+    protected function getArtefact(
+        string $sku,
+        string $qty,
+        string $price,
+        string $valueType,
+        string $website,
+        string $customerGroup,
+        array $artefacts
+    ) {
+    // prepare the artefact we want to export
+        $artefacts[] = $this->newArtefact(
+            array(
+                ColumnKeys::SKU => $sku,
+                ColumnKeys::TIER_PRICE_QTY => $qty,
+                ColumnKeys::TIER_PRICE => $price,
+                ColumnKeys::TIER_PRICE_VALUE_TYPE => $valueType,
+                ColumnKeys::TIER_PRICE_WEBSITE => $website,
+                ColumnKeys::TIER_PRICE_CUSTOMER_GROUP => $customerGroup
+            ),
+            array(
+                ColumnKeys::SKU => ColumnKeys::SKU,
+                ColumnKeys::TIER_PRICE_QTY => ColumnKeys::TIER_PRICES,
+                ColumnKeys::TIER_PRICE => ColumnKeys::TIER_PRICES,
+                ColumnKeys::TIER_PRICE_VALUE_TYPE => ColumnKeys::TIER_PRICES,
+                ColumnKeys::TIER_PRICE_WEBSITE => ColumnKeys::TIER_PRICES,
+                ColumnKeys::TIER_PRICE_CUSTOMER_GROUP => ColumnKeys::TIER_PRICES
+            )
+        );
+        return $artefacts;
     }
 }
