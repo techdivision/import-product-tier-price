@@ -115,8 +115,7 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
             $tierPriceData = $this->initializeTierPrice($this->prepareAttributes());
             
             if ($tierPriceData['website_id'] === 0) {
-                $this->addProcessedTierPrice($this->persistTierPrice($tierPriceData), $pk = $tierPriceData[$this->getPrimaryKeyMemberName()]);
-                $this->addSkuToPkMapping($this->getValue(ColumnKeys::SKU), $pk);
+                $this->addTierPriceDataToPkMapping($tierPriceData);
             } else {
                 $productWebsiteData = $this->getProductBunchProcessor()->loadProductWebsitesBySku(
                     $this->getValue(ColumnKeys::SKU)
@@ -124,9 +123,7 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
                 foreach ($productWebsiteData as $productWebsite) {
                     if ($tierPriceData['website_id'] == $productWebsite['website_id']) {
                         // persist the tier price and mark it as processed
-                        $this->addProcessedTierPrice($this->persistTierPrice($tierPriceData), $pk = $tierPriceData[$this->getPrimaryKeyMemberName()]);
-
-                        $this->addSkuToPkMapping($this->getValue(ColumnKeys::SKU), $pk);
+                        $this->addTierPriceDataToPkMapping($tierPriceData);
                     } else {
                         $this->getSubject()->getSystemLogger()->warning(
                             sprintf(
@@ -250,5 +247,18 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
     protected function isAllGroups($code)
     {
         return $this->getSubject()->isAllGroups($code);
+    }
+
+    /**
+     * @param array $tierPriceData TierPriceData
+     * @return void
+     */
+    protected function addTierPriceDataToPkMapping(array $tierPriceData)
+    {
+        $this->addProcessedTierPrice(
+            $this->persistTierPrice($tierPriceData),
+            $pk = $tierPriceData[$this->getPrimaryKeyMemberName()]
+        );
+        $this->addSkuToPkMapping($this->getValue(ColumnKeys::SKU), $pk);
     }
 }
