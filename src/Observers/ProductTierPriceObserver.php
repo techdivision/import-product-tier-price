@@ -134,23 +134,19 @@ class ProductTierPriceObserver extends AbstractProductImportObserver
                 $valueType = $this->getValueType($tierPriceImportData);
                 $website = $this->getWebsiteCode($tierPriceImportData);
                 $customerGroup = $this->getCustomerGroupCode($tierPriceImportData);
-                $tierpriceWebsites = $this->explode($this->getValue(ColumnKeys::PRODUCT_WEBSITES), ',');
+                $tierpriceWebsites = $this->explode($this->getValue(ColumnKeys::PRODUCT_WEBSITES));
 
-                if ($website === DefaultCodes::ALL_WEBSITES) {
+                if ($website === DefaultCodes::ALL_WEBSITES || in_array($website, $tierpriceWebsites)) {
                     // prepare the artefact we want to export
-                    $artefacts = $this->getArtefact($sku, $qty, $price, $valueType, $website, $customerGroup, $artefacts);
-                } elseif (in_array($website, $tierpriceWebsites)) {
-                    // prepare the artefact we want to export
-                    $artefacts = $this->getArtefact($sku, $qty, $price, $valueType, $website, $customerGroup, $artefacts);
+                    $artefacts = $this->createArtefact($sku, $qty, $price, $valueType, $website, $customerGroup, $artefacts);
                 } else {
                     $this->getSubject()->getSystemLogger()->warning(
                         sprintf(
-                            "The Product with the SKU %s has not assigned to the Website %s",
+                            "The Product with the SKU %s has not assigned to the Website %s for tier prices",
                             $sku,
                             $website
                         )
                     );
-                    $this->skipRow();
                 }
             }
             // add the artefact to the observer to be exported later
@@ -231,7 +227,7 @@ class ProductTierPriceObserver extends AbstractProductImportObserver
      * @param array  $artefacts     Artefact
      * @return array
      */
-    protected function getArtefact(
+    protected function createArtefact(
         string $sku,
         string $qty,
         string $price,

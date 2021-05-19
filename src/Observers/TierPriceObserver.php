@@ -250,7 +250,10 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
     }
 
     /**
+     * Persist the tier price and mark it as processed
+     *
      * @param array $tierPriceData TierPriceData
+     *
      * @return void
      */
     protected function addTierPriceDataToPkMapping(array $tierPriceData)
