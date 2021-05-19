@@ -120,21 +120,23 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
                 $productWebsiteData = $this->getProductBunchProcessor()->loadProductWebsitesBySku(
                     $this->getValue(ColumnKeys::SKU)
                 );
+                $found = false;
                 foreach ($productWebsiteData as $productWebsite) {
                     if ($tierPriceData['website_id'] == $productWebsite['website_id']) {
+                        $found = true;
                         // persist the tier price and mark it as processed
                         $this->addTierPriceDataToPkMapping($tierPriceData);
-                    } else {
-                        $this->getSubject()->getSystemLogger()->warning(
-                            sprintf(
-                                "The Product with the SKU %s has not assigned to the Website %s",
-                                $productWebsite['sku'],
-                                $tierPriceData['website_id']
-                            )
-                        );
-                        $this->skipRow();
-                        return;
+                        break;
                     }
+                }
+                if (!$found) {
+                    $this->getSubject()->getSystemLogger()->warning(
+                        sprintf(
+                            "The Product with the SKU %s has not assigned to the Website %s",
+                            $this->getValue(ColumnKeys::SKU),
+                            $tierPriceData['website_id']
+                        )
+                    );
                 }
             }
         } catch (\Exception $e) {
