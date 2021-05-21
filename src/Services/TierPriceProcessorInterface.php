@@ -41,7 +41,7 @@ interface TierPriceProcessorInterface extends ProductProcessorInterface
     /**
      * Returns the primary key util instance.
      *
-     * @return \TechDivision\Import\Utils\PrimaryKeyUtilInterface The primary key util instance
+     * @return \TechDivision\Import\Dbal\Utils\PrimaryKeyUtilInterface The primary key util instance
      */
     public function getPrimaryKeyUtil();
 
@@ -49,7 +49,7 @@ interface TierPriceProcessorInterface extends ProductProcessorInterface
      * Returns the primary key member name for the actual Magento edition.
      *
      * @return string The primary key member name
-     * @see \TechDivision\Import\Utils\PrimaryKeyUtilInterface::getPrimaryKeyMemberName()
+     * @see \TechDivision\Import\Dbal|Utils\PrimaryKeyUtilInterface::getPrimaryKeyMemberName()
      */
     public function getPrimaryKeyMemberName();
 

@@ -23,7 +23,7 @@
 namespace TechDivision\Import\Product\TierPrice\Services;
 
 use TechDivision\Import\Dbal\Actions\ActionInterface;
-use TechDivision\Import\Utils\PrimaryKeyUtilInterface;
+use TechDivision\Import\Dbal\Utils\PrimaryKeyUtilInterface;
 use TechDivision\Import\Dbal\Connection\ConnectionInterface;
 use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
 use TechDivision\Import\Product\Repositories\ProductRepositoryInterface;
@@ -53,7 +53,7 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     /**
      * The primary key util instance.
      *
-     * @var \TechDivision\Import\Utils\PrimaryKeyUtilInterface
+     * @var \TechDivision\Import\Dbal\Utils\PrimaryKeyUtilInterface
      */
     protected $primaryKeyUtil;
 
@@ -82,7 +82,7 @@ class TierPriceProcessor implements TierPriceProcessorInterface
      * Initialize the processor with the necessary assembler and repository instances.
      *
      * @param \TechDivision\Import\Dbal\Connection\ConnectionInterface                         $connection          The \PDO connnection instance
-     * @param \TechDivision\Import\Utils\PrimaryKeyUtilInterface                               $primaryKeyUtil      The primary key util
+     * @param \TechDivision\Import\Dbal\Utils\PrimaryKeyUtilInterface                          $primaryKeyUtil      The primary key util
      * @param \TechDivision\Import\Product\TierPrice\Repositories\TierPriceRepositoryInterface $tierPriceRepository The repository to load the tier prices with
      * @param \TechDivision\Import\Product\Repositories\ProductRepositoryInterface             $productRepository   The repository to load the products with
      * @param \TechDivision\Import\Dbal\Actions\ActionInterface                                $tierPriceAction     The action for tier price  CRUD methods
@@ -126,7 +126,7 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     /**
      * Sets the passed primary key util instance.
      *
-     * @param \TechDivision\Import\Utils\PrimaryKeyUtilInterface $primaryKeyUtil The primary key util instance
+     * @param \TechDivision\Import\Dbal\Utils\PrimaryKeyUtilInterface $primaryKeyUtil The primary key util instance
      *
      * @return void
      */
@@ -138,7 +138,7 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     /**
      * Returns the primary key util instance.
      *
-     * @return \TechDivision\Import\Utils\PrimaryKeyUtilInterface The primary key util instance
+     * @return \TechDivision\Import\Dbal\Utils\PrimaryKeyUtilInterface The primary key util instance
      */
     public function getPrimaryKeyUtil()
     {
@@ -149,7 +149,7 @@ class TierPriceProcessor implements TierPriceProcessorInterface
      * Returns the primary key member name for the actual Magento edition.
      *
      * @return string The primary key member name
-     * @see \TechDivision\Import\Utils\PrimaryKeyUtilInterface::getPrimaryKeyMemberName()
+     * @see \TechDivision\Import\Dbal\Utils\PrimaryKeyUtilInterface::getPrimaryKeyMemberName()
      */
     public function getPrimaryKeyMemberName()
     {

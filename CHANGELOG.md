@@ -1,3 +1,15 @@
+# Version 18.0.0
+
+## Bugfixes
+
+* Fixed #PAC-383:
+  * Tier price Import with non-existent website
+  * Import of Tierprice for import-product-scenario
+
+## Features
+
+* none
+
 # Version 17.0.0
 
 ## Bugfixes

@@ -46,7 +46,7 @@ class TierPriceRepository extends AbstractRepository implements TierPriceReposit
     /**
      * The primary key util instance.
      *
-     * @var \TechDivision\Import\Utils\PrimaryKeyUtilInterface
+     * @var \TechDivision\Import\Dbal\Utils\PrimaryKeyUtilInterface
      */
     protected $primaryKeyUtil;
 
