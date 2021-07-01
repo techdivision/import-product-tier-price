@@ -103,9 +103,10 @@ class ClearTierPriceObserver extends AbstractProductTierPriceObserver
             if ($this->getSubject()->isDebugMode()) {
                 $this->getSubject()->getSystemLogger()->warning($e->getMessage());
                 $this->skipRow();
+            } elseif ($this->getSubject()->isStrictMode()) {
+                 // throw the exception agatin in strict mode
+                 throw $e;
             }
-            // throw the exception agatin
-            throw $e;
         }
     }
 
