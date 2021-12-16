@@ -3,18 +3,12 @@
 /**
  * TechDivision\Import\Product\TierPrice\Observers\TierPriceUpdateObserver
  *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- *
- * PHP version 5
+ * PHP version 7
  *
  * @author    Klaas-Tido Rühl <kr@refusion.com>
  * @author    Tim Wagner <t.wagner@techdivision.com>
  * @copyright 2019 REFUSiON GmbH <info@refusion.com>
- * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * @license   https://opensource.org/licenses/MIT
  * @link      https://github.com/techdivision/import-product-tier-price
  * @link      https://www.techdivision.com
  * @link      https://www.refusion.com
@@ -35,7 +29,7 @@ use TechDivision\Import\Product\TierPrice\Utils\DefaultCodes;
  * @author    Klaas-Tido Rühl <kr@refusion.com>
  * @author    Tim Wagner <t.wagner@techdivision.com>
  * @copyright 2019 REFUSiON GmbH <info@refusion.com>
- * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * @license   https://opensource.org/licenses/MIT
  * @link      https://github.com/techdivision/import-product-tier-price
  * @link      https://www.techdivision.com
  * @link      https://www.refusion.com
@@ -116,8 +110,7 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
             $tierPriceData = $this->initializeTierPrice($this->prepareAttributes());
 
             if ($tierPriceData['website_id'] === 0) {
-                $this->addProcessedTierPrice($this->persistTierPrice($tierPriceData), $pk = $tierPriceData[$this->getPrimaryKeyMemberName()]);
-                $this->addSkuToPkMapping($this->getValue(ColumnKeys::SKU), $pk);
+                $this->addTierPriceDataToPkMapping($tierPriceData);
             } else {
                 $productWebsiteData = $this->getProductBunchProcessor()->loadProductWebsitesBySku(
                     $this->getValue(ColumnKeys::SKU)
@@ -251,5 +244,21 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
     protected function isAllGroups($code)
     {
         return $this->getSubject()->isAllGroups($code);
+    }
+
+    /**
+     * Persist the tier price and mark it as processed
+     *
+     * @param array $tierPriceData TierPriceData
+     *
+     * @return void
+     */
+    protected function addTierPriceDataToPkMapping(array $tierPriceData)
+    {
+        $this->addProcessedTierPrice(
+            $this->persistTierPrice($tierPriceData),
+            $pk = $tierPriceData[$this->getPrimaryKeyMemberName()]
+        );
+        $this->addSkuToPkMapping($this->getValue(ColumnKeys::SKU), $pk);
     }
 }
