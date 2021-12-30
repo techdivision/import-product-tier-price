@@ -114,7 +114,6 @@ class ClearTierPriceObserver extends AbstractProductTierPriceObserver
 
             // throw the exception agatin in strict mode
             throw $e;
-
         }
     }
 

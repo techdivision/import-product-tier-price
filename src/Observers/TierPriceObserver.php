@@ -156,7 +156,6 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
 
             // throw the exception again in strict mode
             throw $e;
-
         }
     }
 
