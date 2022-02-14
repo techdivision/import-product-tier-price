@@ -16,6 +16,7 @@ namespace TechDivision\Import\Product\TierPrice\Observers;
 use TechDivision\Import\Product\TierPrice\Utils\MemberNames;
 use TechDivision\Import\Product\TierPrice\Utils\ValueTypesInterface;
 use TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface;
+use TechDivision\Import\Utils\RegistryKeys;
 
 /**
  * Observer for deleting tier prices from the database.
@@ -93,12 +94,25 @@ class ClearTierPriceObserver extends AbstractProductTierPriceObserver
                 $this->deleteTierPrice(array(MemberNames::VALUE_ID => $tierPrice[MemberNames::VALUE_ID]));
             }
         } catch (\Exception $e) {
-            // query whether or not we're in debug mode
-            if ($this->getSubject()->isDebugMode()) {
+            // query whether or not we're in no-strict mode
+            if (!$this->getSubject()->isStrictMode()) {
                 $this->getSubject()->getSystemLogger()->warning($e->getMessage());
+                $this->mergeStatus(
+                    array(
+                        RegistryKeys::NO_STRICT_VALIDATIONS => array(
+                            basename($this->getFilename()) => array(
+                                $this->getLineNumber() => array(
+                                    MemberNames::SKU => $e->getMessage()
+                                )
+                            )
+                        )
+                    )
+                );
                 $this->skipRow();
+                return;
             }
-            // throw the exception agatin
+
+            // throw the exception agatin in strict mode
             throw $e;
         }
     }

@@ -22,6 +22,7 @@ use TechDivision\Import\Product\TierPrice\Utils\ValueTypesInterface;
 use TechDivision\Import\Product\TierPrice\Services\TierPriceProcessorInterface;
 use TechDivision\Import\Product\TierPrice\Utils\ColumnKeys;
 use TechDivision\Import\Product\TierPrice\Utils\DefaultCodes;
+use TechDivision\Import\Utils\RegistryKeys;
 
 /**
  * Observer for creating/updating/deleting tier prices from the database.
@@ -135,13 +136,25 @@ class TierPriceObserver extends AbstractProductTierPriceObserver
                 }
             }
         } catch (\Exception $e) {
-            // query whether or not we're in debug mode
-            if ($this->getSubject()->isDebugMode()) {
+            // query whether or not we're in no-strict mode
+            if (!$this->getSubject()->isStrictMode()) {
                 $this->getSubject()->getSystemLogger()->warning($e->getMessage());
+                $this->mergeStatus(
+                    array(
+                        RegistryKeys::NO_STRICT_VALIDATIONS => array(
+                            basename($this->getFilename()) => array(
+                                $this->getLineNumber() => array(
+                                    ColumnKeys::SKU =>  $e->getMessage()
+                                )
+                            )
+                        )
+                    )
+                );
                 $this->skipRow();
                 return;
             }
-            // throw the exception agatin
+
+            // throw the exception again in strict mode
             throw $e;
         }
     }
