@@ -9,6 +9,7 @@
 ## Features
 
 * Refactoring deprecated classes. see https://github.com/techdivision/import-cli-simple/blob/master/UPGRADE-4.0.0.md
+* PAC-294: Integration strict mode
 
 # Version 17.0.0
 
