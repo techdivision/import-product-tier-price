@@ -73,6 +73,13 @@ class TierPriceProcessor implements TierPriceProcessorInterface
     protected $tierPricesByHash = null;
 
     /**
+     * The repository to load the products with.
+     *
+     * @var \TechDivision\Import\Product\Repositories\ProductRepositoryInterface
+     */
+    protected $productRepository;
+
+    /**
      * Initialize the processor with the necessary assembler and repository instances.
      *
      * @param \TechDivision\Import\Dbal\Connection\ConnectionInterface                         $connection          The \PDO connnection instance
