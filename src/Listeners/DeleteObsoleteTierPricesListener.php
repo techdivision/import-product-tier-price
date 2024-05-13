@@ -119,8 +119,8 @@ class DeleteObsoleteTierPricesListener extends \League\Event\AbstractListener
         $status = $this->getRegistryProcessor()->getAttribute(RegistryKeys::STATUS);
 
         // query whether or not an array with the IDs of the processed tier prices exists
-        if (isset($status[RegistryKeys::PRIMARY_SKU_TO_PK_MAPPINGS])) {
-            return $status[RegistryKeys::PRIMARY_SKU_TO_PK_MAPPINGS];
+        if (isset($status[RegistryKeys::PROCESSED_TIER_PRICES])) {
+            return $status[RegistryKeys::PROCESSED_TIER_PRICES];
         }
 
         // if not, return an empty array

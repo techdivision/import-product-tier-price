@@ -44,7 +44,8 @@ class PrimarySkuToPkMappingUtil implements SkuToPkMappingUtilInterface
      * @var array
      */
     protected $editionSkuToPkMappings = array(
-        EditionNamesInterface::EE => RegistryKeys::PRIMARY_SKU_TO_PK_MAPPINGS
+        EditionNamesInterface::EE => RegistryKeys::PRIMARY_SKU_TO_PK_MAPPINGS,
+        EditionNamesInterface::CE => RegistryKeys::PRIMARY_SKU_TO_PK_MAPPINGS
     );
 
     /**
