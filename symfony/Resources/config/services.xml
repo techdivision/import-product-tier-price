@@ -105,7 +105,11 @@
         <service id="import_product_tier_price.listener.delete.obsolete.tier_prices" class="TechDivision\Import\Product\TierPrice\Listeners\DeleteObsoleteTierPricesListener">
             <argument type="service" id="import_product_tier_price.processor.tier_price"/>
             <argument type="service" id="import.processor.registry"/>
-            <argument type="service" id="import_product.utils.sku.to.pk.mapping"/>
+            <argument type="service" id="import_product_tier_price.utils.primary.sku.to.pk.mapping"/>
+        </service>
+
+        <service id="import_product_tier_price.utils.primary.sku.to.pk.mapping" class="TechDivision\Import\Product\TierPrice\Utils\PrimarySkuToPkMappingUtil">
+            <argument type="service" id="configuration"/>
         </service>
     </services>
 </container>
