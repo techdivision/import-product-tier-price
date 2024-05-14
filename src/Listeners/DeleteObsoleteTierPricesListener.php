@@ -56,7 +56,7 @@ class DeleteObsoleteTierPricesListener extends \League\Event\AbstractListener
      *
      * @var \TechDivision\Import\Product\Utils\SkuToPkMappingUtilInterface
      */
-    protected $skuToPkMappingUtil;
+    protected $primarySkuToPkMappingUtil;
 
     /**
      * Initializes the listener with the tier price processor.
@@ -72,7 +72,7 @@ class DeleteObsoleteTierPricesListener extends \League\Event\AbstractListener
     ) {
         $this->tierPriceProcessor = $tierPriceProcessor;
         $this->registryProcessor = $registryProcessor;
-        $this->skuToPkMappingUtil = $skuToPkMappingUtil;
+        $this->primarySkuToPkMappingUtil = $skuToPkMappingUtil;
     }
 
     /**
@@ -102,7 +102,7 @@ class DeleteObsoleteTierPricesListener extends \League\Event\AbstractListener
      */
     protected function getSkuToPkMappingUtil()
     {
-        return $this->skuToPkMappingUtil;
+        return $this->primarySkuToPkMappingUtil;
     }
 
     /**
