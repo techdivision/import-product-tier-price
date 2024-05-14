@@ -1,3 +1,14 @@
+# Version 18.1.0
+
+## Bugfixes
+
+* Fix issue: Remove the tier price for all products that are available through the fired listner
+    * Define new `src/Utils/PrimarySkuToPkMappingUtil` to limit the listener just to tier price SKUs and entity/Row IDs.
+
+## Features
+
+* none
+
 # Version 18.0.1
 
 ## Bugfixes
