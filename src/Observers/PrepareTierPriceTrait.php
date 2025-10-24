@@ -115,7 +115,7 @@ trait PrepareTierPriceTrait
      *
      * @return mixed|null The, almost formatted, value
      */
-    abstract public function getValue($name, $default = null, callable $callback = null);
+    abstract public function getValue($name, $default = null, ?callable $callback = null);
 
     /**
      * Append's the exception suffix containing filename and line number to the

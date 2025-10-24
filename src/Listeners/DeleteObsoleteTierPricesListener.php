@@ -134,11 +134,11 @@ class DeleteObsoleteTierPricesListener extends \League\Event\AbstractListener
      * and which were not part of the tier price import.
      *
      * @param \League\Event\EventInterface                 $event  The event that triggered the listener
-     * @param \TechDivision\Import\Plugins\PluginInterface $plugin The plugin that triggered the listener
+     * @param \TechDivision\Import\Plugins\PluginInterface|null $plugin The plugin that triggered the listener
      *
      * @return void
      */
-    public function handle(\League\Event\EventInterface $event, PluginInterface $plugin = null)
+    public function handle(\League\Event\EventInterface $event, ?PluginInterface $plugin = null)
     {
 
         // query whether or not the tier prices has to be cleaned-up
