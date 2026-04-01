@@ -175,7 +175,7 @@ class TierPriceSubject extends AbstractProductSubject
 
         // map the customer group code and query whether or not the customer group with the passed code is available
         if (isset($this->customerGroups[$code = $this->mapCustomerGroupCode($code)])) {
-            return (integer) $this->customerGroups[$code][MemberNames::CUSTOMER_GROUP_ID];
+            return (int)$this->customerGroups[$code][MemberNames::CUSTOMER_GROUP_ID];
         }
 
         // throw an exception if the customer group with the passed code is NOT available

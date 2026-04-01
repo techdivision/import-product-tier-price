@@ -67,11 +67,11 @@ trait PrepareTierPriceTrait
             $customerGroupId = $this->getCustomerGroupIdByCode($customerGroupCode = $this->getValue(ColumnKeys::TIER_PRICE_CUSTOMER_GROUP));
 
             // query whether or not the tier price is valid for ALL GROUPS
-            $allGroups = (integer) $this->isAllGroups($customerGroupCode);
+            $allGroups = (int)$this->isAllGroups($customerGroupCode);
 
             // initialize the (percentage) value
-            $value = $this->getValueTypes()->isFixed($valueType) ? (double) $price : 0.00;
-            $percentageValue = $this->getValueTypes()->isDiscount($valueType) ? (integer) $price : null;
+            $value = $this->getValueTypes()->isFixed($valueType) ? (float)$price : 0.00;
+            $percentageValue = $this->getValueTypes()->isDiscount($valueType) ? (int)$price : null;
 
             // initialize the tier price with the given values
             return $this->initializeEntity(
