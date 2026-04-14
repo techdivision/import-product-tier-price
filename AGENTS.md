@@ -1,75 +1,77 @@
 # AGENTS.md - import-product-tier-price
 
-## Zweck & Verantwortung
 
-Das `import-product-tier-price` Modul bietet **Product Tier Price Import-Funktionalität**. Es ist ein **Tier 5 Modul** und erweitert `import-product`.
+## Zweck & Verantwortung
+Product Tier Price Import für Mengenrabatte und kundengruppen-spezifische Preise. **Tier 5 Modul**.
 
 **Hauptverantwortung:**
-- Tier Price Import
-- Customer Group Pricing
-- Repository Pattern für Tier Prices
-- Service Layer für Tier Price-Verarbeitung
-- Observer Pattern für Tier Price-Hooks
-- Event-Driven für Bulk Operations
+- Product Tier Price Import (Quantity-basierte Rabatte)
+- Customer Group Pricing Management
+- Website-spezifische Tier Prices
+- Tier Price Validierung
 
 ## Architektur & Design Patterns
 
 ### Kern-Klassen
-- **TierPriceRepository**: Persistierung von Tier Prices
-- **TierPriceProcessor**: Service Layer
-- **TierPriceObserver**: Observer für Hooks
+- **ProductTierPriceRepository**: Persistiert Tier Price-Einträge
+- **TierPriceProcessor**: Service Layer für Verarbeitung
+- **TierPriceValidator**: Validiert Quantity und Preis-Strukturen
+- **CustomerGroupResolver**: Mapped Customer Group IDs
 
 ### Verwendete Patterns
-- **Observer Pattern**: Für Tier Price-Hooks
-- **Repository Pattern**: Für Daten-Persistierung
-- **Service Layer**: Für Business Logic
-- **Event-Driven**: Für Bulk Operations
+- **Observer Pattern**: Für Hooks
+- **Repository Pattern**: Datenschicht-Abstraktion
+- **Service Layer**: Business Logic Isolation
 
 ## Abhängigkeiten
+- **import-product** ^26.2 - Base Product Importer
 
-### Externe Pakete
-- **Keine**
+## Database Schema
 
-### TechDivision Dependencies
-- **import-product** ^26.2 - Product Importer
+**catalog_product_entity_tier_price** - Tier Price Einträge
+- `entity_id` (Product ID)
+- `customer_group_id` - 0=all groups, oder spezifische Group ID
+- `qty` - Minimum Quantity für Rabatt (z.B. 10)
+- `value` - Price für diese Quantity
+- `website_id` - Website Kontext
 
-### Abhängig von diesem Modul (1 Reverse Dependency)
-- **import-cli-simple** - Master CLI
+## Common Use Cases
 
-## Wichtige Entry Points
-
-### Repository Klassen
 ```php
-// Tier Price Repository
-TierPriceRepository::create($row): void
-TierPriceRepository::findByProductId($productId): array
+// CSV: Rabatt bei Mengen
+// sku,qty_1,price_1,qty_2,price_2
+// PROD-001,10,45.00,100,40.00
+// Erstellt: 1-9 = normaler Preis, 10-99 = $45, 100+ = $40
 ```
 
-## Events & Extension Points
+## Performance Considerations
 
-### Events
-- **BeforeTierPriceCreateEvent**: Vor Tier Price-Create
-- **AfterTierPriceCreateEvent**: Nach Tier Price-Create
-
-### Listeners
-- **TierPriceCacheListener**: Für Tier Price-Caching
+1. **Customer Group Lookups**: Groups werden mehrfach gesucht
+2. **Website-Kontext**: Separate Einträge pro Website
+3. **Quantity-Ordering**: Müssen aufsteigend sein für Rabatt-Logik
 
 ## Hints für KI-Agenten
 
-### Wichtig zu verstehen
-1. **Tier 5 Modul**: Erweitert Product Importer
-2. **Tier Price-fokussiert**: Spezialisiert auf Tier Prices
-3. **Observer Pattern**: Für Hooks
-4. **Repository Pattern**: Für Persistierung
-5. **Event-Driven**: Für Bulk Operations
+### Kritisches Verständnis
+1. **Quantity-basiert**: Rabatte bei Mindestmengen
+2. **Customer Group-aware**: Verschiedene Preise pro Kundengruppe
+3. **Website-spezifisch**: Pro Website unterschiedlich
+4. **Tier-Reihenfolge**: Quantities müssen aufsteigend sein
 
-## Bekannte Einschränkungen
+### Häufige Fehler
+- ❌ Customer Group IDs nicht validieren
+- ❌ Quantities nicht aufsteigend
+- ❌ Website-IDs nicht berücksichtigen
+- ❌ Tier Prices auf Bundle/Grouped verwenden
 
-- **Tier Price-Only**: Keine anderen Pricing-Features
-- **Abhängig von Products**: Erfordert Products zu existieren
+## Known Limitations
+
+- **Quantity-Order**: Muss aufsteigend sein (kritisch!)
+- **Customer Group**: Abhängig von existierenden Groups
+- **Website**: Separate Entries pro Website erforderlich
 
 ## Zusammenfassung
 
-`import-product-tier-price` ist ein **Tier 5 Modul**, das Product Tier Price Import-Funktionalität bietet. Es erweitert den Product Importer mit spezialisierter Funktionalität für Tier Prices.
+**Tier 5 Modul** für Quantity-based Pricing mit Customer Group und Website-Support. Verwaltet Mengenrabatte und kundengruppen-spezifische Preise.
 
-**Für Agenten:** Verstehe dieses Modul als **Tier Price Importer** mit Observer, Repository Pattern, und Event-Driven Architektur.
+**Für Agenten:** Tier Price Importer mit Quantity und Group-Management.
